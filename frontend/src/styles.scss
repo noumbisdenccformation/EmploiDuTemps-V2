@@ -1,0 +1,19 @@
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-toolbar {
+  background: #1976d2 !important;
+  color: white !important;
+}
+
+.mat-sidenav {
+  width: 250px;
+}
+
+.mat-list-item {
+  height: 48px !important;
+}
+
+.content {
+  padding: 20px;
+}

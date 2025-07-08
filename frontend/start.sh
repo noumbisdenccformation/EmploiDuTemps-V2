@@ -1,0 +1,10 @@
+#!/bin/bash
+echo "Démarrage du frontend Angular..."
+echo "Structure créée avec succès!"
+echo ""
+echo "Pour lancer le frontend, vous devez:"
+echo "1. Installer Node.js et npm"
+echo "2. Exécuter: npm install"
+echo "3. Puis: ng serve"
+echo ""
+echo "Le frontend sera disponible sur http://localhost:4200"

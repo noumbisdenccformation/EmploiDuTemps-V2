@@ -1,0 +1,31 @@
+{
+  "teachers": [
+    {
+      "id": 1,
+      "firstName": "Jean",
+      "lastName": "Dupont",
+      "availability": {
+        "Lundi": [{"start": "08:00", "end": "16:30"}],
+        "Mardi": [{"start": "08:00", "end": "16:30"}],
+        "Mercredi": [{"start": "08:00", "end": "16:30"}],
+        "Jeudi": [{"start": "08:00", "end": "16:30"}],
+        "Vendredi": [{"start": "08:00", "end": "16:30"}]
+      },
+      "subjects": [{"id": 1}]
+    }
+  ],
+  "subjects": [
+    {
+      "id": 1,
+      "name": "Mathématiques",
+      "duration": 60
+    }
+  ],
+  "classes": [
+    {
+      "id": 1,
+      "name": "6ème A",
+      "subjects": [{"id": 1}]
+    }
+  ]
+}

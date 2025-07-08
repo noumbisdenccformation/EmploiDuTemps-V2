@@ -1,0 +1,60 @@
+{
+  "teachers": [
+    {
+      "id": 1,
+      "firstName": "Jean",
+      "lastName": "Dupont",
+      "availability": {
+        "Lundi": [{"start": "08:00", "end": "16:30"}],
+        "Mardi": [{"start": "08:00", "end": "16:30"}],
+        "Mercredi": [{"start": "08:00", "end": "12:00"}],
+        "Jeudi": [{"start": "08:00", "end": "16:30"}],
+        "Vendredi": [{"start": "08:00", "end": "15:30"}]
+      },
+      "subjects": [{"id": 1}]
+    },
+    {
+      "id": 2,
+      "firstName": "Marie",
+      "lastName": "Martin",
+      "availability": {
+        "Lundi": [{"start": "08:00", "end": "16:30"}],
+        "Mardi": [{"start": "09:00", "end": "16:30"}],
+        "Mercredi": [{"start": "08:00", "end": "12:00"}],
+        "Jeudi": [{"start": "08:00", "end": "16:30"}],
+        "Vendredi": [{"start": "08:00", "end": "16:30"}]
+      },
+      "subjects": [{"id": 2}]
+    }
+  ],
+  "subjects": [
+    {
+      "id": 1,
+      "name": "Mathématiques",
+      "code": "MATH",
+      "duration": 60
+    },
+    {
+      "id": 2,
+      "name": "Français",
+      "code": "FR",
+      "duration": 60
+    }
+  ],
+  "classes": [
+    {
+      "id": 1,
+      "name": "6ème A",
+      "level": "6ème",
+      "studentCount": 25,
+      "subjects": [{"id": 1}, {"id": 2}]
+    },
+    {
+      "id": 2,
+      "name": "6ème B",
+      "level": "6ème",
+      "studentCount": 23,
+      "subjects": [{"id": 1}, {"id": 2}]
+    }
+  ]
+}
