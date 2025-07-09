@@ -75,8 +75,8 @@ import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
                   <input matInput formControlName="name">
                 </mat-form-field>
                 <mat-form-field>
-                  <mat-label>Durée (min)</mat-label>
-                  <input matInput type="number" formControlName="duration">
+                  <mat-label>Durée (heures)</mat-label>
+                  <input matInput type="number" formControlName="duration" step="0.25">
                 </mat-form-field>
                 <button mat-icon-button color="warn" (click)="removeSubject(i)">
                   <mat-icon>delete</mat-icon>
@@ -187,7 +187,7 @@ export class DataInputComponent implements OnInit {
     const subject = this.fb.group({
       id: [this.subjects.length + 1],
       name: ['', Validators.required],
-      duration: [60, Validators.required]
+      duration: [1, Validators.required]
     });
     this.subjects.push(subject);
     this.onDataChange(); // Régénération automatique
@@ -254,10 +254,10 @@ export class DataInputComponent implements OnInit {
     });
 
     this.addSubject();
-    this.subjects.at(0).patchValue({ name: 'Mathématiques', duration: 60 });
+    this.subjects.at(0).patchValue({ name: 'Mathématiques', duration: 1 });
 
     this.addSubject();
-    this.subjects.at(1).patchValue({ name: 'Français', duration: 60 });
+    this.subjects.at(1).patchValue({ name: 'Français', duration: 1 });
 
     this.addClass();
     this.classes.at(0).patchValue({ name: '6ème A', subjectIds: '1,2' });

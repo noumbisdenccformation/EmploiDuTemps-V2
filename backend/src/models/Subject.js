@@ -17,8 +17,8 @@ const Subject = sequelize.define('Subject', {
     allowNull: false
   },
   duration: {
-    type: DataTypes.INTEGER,
-    defaultValue: 60, // durée en minutes
+    type: DataTypes.FLOAT, // durée en heures
+    defaultValue: 1.0, // 1h par défaut
     allowNull: false
   },
   color: {

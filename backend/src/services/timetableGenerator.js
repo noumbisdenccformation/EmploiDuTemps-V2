@@ -56,11 +56,11 @@ class TimetableGenerator {
         
         targetClasses.forEach(cls => {
           // Calculer le nombre de créneaux nécessaires basé sur la durée
-          const slotDuration = 60; // Chaque créneau = 60 minutes
+          const slotDuration = 1; // Chaque créneau = 1 heure
           const coursesPerWeek = Math.ceil(subject.duration / slotDuration);
           let assignedCount = 0;
           
-          console.log(`${subject.name}: ${subject.duration}min/semaine = ${coursesPerWeek} créneaux nécessaires`);
+          console.log(`${subject.name}: ${subject.duration}h/semaine = ${coursesPerWeek} créneaux nécessaires`);
           
           // Forcer l'assignation sur différents jours - 1 cours par jour minimum
           for (let day of this.days) {

@@ -12,7 +12,7 @@ export interface Subject {
   id?: number;
   name: string;
   code: string;
-  duration: number;
+  duration: number; // durée en heures
   color: string;
   isCommonCore: boolean;
   isActive: boolean;

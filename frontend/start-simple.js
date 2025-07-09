@@ -77,7 +77,7 @@ app.get('/', (req, res) => {
                         { id: 1, firstName: "Jean", lastName: "Dupont", subjects: [{id: 1}], 
                           availability: { "Lundi": [{start: "08:00", end: "16:30"}] } }
                     ],
-                    subjects: [{ id: 1, name: "Mathématiques", duration: 60 }],
+                    subjects: [{ id: 1, name: "Mathématiques", duration: 1 }],
                     classes: [{ id: 1, name: "6ème A", subjects: [{id: 1}] }]
                 };
 

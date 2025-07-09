@@ -3,7 +3,7 @@ let teachers = [
   { id: 1, firstName: 'Jean', lastName: 'Dupont', email: 'jean.dupont@school.fr', isActive: true }
 ];
 let subjects = [
-  { id: 1, name: 'Mathématiques', code: 'MATH', duration: 60, isActive: true }
+  { id: 1, name: 'Mathématiques', code: 'MATH', duration: 1, isActive: true }
 ];
 let classes = [
   { id: 1, name: '6ème A', level: '6ème', studentCount: 25, isActive: true }
