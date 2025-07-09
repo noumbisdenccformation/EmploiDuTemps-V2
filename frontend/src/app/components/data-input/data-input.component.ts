@@ -72,7 +72,7 @@ import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
               <div class="form-row">
                 <mat-form-field>
                   <mat-label>Nom</mat-label>
-                  <input matInput formControlName="name">
+                  <input matInput formControlName="name" [placeholder]="(i+1) + '. ' + subject.get('name').value">
                 </mat-form-field>
                 <mat-form-field>
                   <mat-label>Durée (heures)</mat-label>
