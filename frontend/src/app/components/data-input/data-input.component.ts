@@ -70,9 +70,10 @@ import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
           <div formArrayName="subjects">
             <div *ngFor="let subject of subjects.controls; let i = index" [formGroupName]="i" class="item-form">
               <div class="form-row">
+                <span style="min-width: 2em; font-weight: bold;">{{i+1}}.</span>
                 <mat-form-field>
                   <mat-label>Nom</mat-label>
-                  <input matInput formControlName="name" [placeholder]="(i+1) + '. ' + subject.get('name').value">
+                  <input matInput formControlName="name">
                 </mat-form-field>
                 <mat-form-field>
                   <mat-label>Durée (heures)</mat-label>
