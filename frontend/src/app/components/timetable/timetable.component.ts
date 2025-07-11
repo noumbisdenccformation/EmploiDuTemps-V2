@@ -35,6 +35,7 @@ export class TimetableComponent implements OnInit {
   ngOnInit() {}
 
   onDataGenerated(data: any) {
+    console.log('Données reçues dans timetable:', data);
     this.currentData = data;
     this.generateTimetable();
   }
@@ -45,11 +46,13 @@ export class TimetableComponent implements OnInit {
     this.loading = true;
     this.timetableService.generate(this.currentData).subscribe({
       next: (result) => {
+        console.log('Résultat reçu:', result);
         this.result = result;
+        this.timetableService.setLastGeneratedResult(result);
         this.loading = false;
       },
       error: (error) => {
-        console.error('Erreur:', error);
+        console.error('Erreur génération:', error);
         this.loading = false;
       }
     });

@@ -6,6 +6,11 @@
         <mat-icon>{{item.icon}}</mat-icon>
         <span>{{item.name}}</span>
       </a>
+      <mat-divider></mat-divider>
+      <button mat-list-item (click)="generateAllPDF()" class="pdf-all-btn">
+        <mat-icon>picture_as_pdf</mat-icon>
+        <span>Exporter tous les PDF</span>
+      </button>
     </mat-nav-list>
   </mat-sidenav>
   

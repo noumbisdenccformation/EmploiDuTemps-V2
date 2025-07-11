@@ -7,6 +7,7 @@ import { ApiService } from './api.service';
 })
 export class TimetableService {
   private endpoint = '/timetables';
+  private lastGeneratedResult: any = null;
 
   constructor(private api: ApiService) {}
 
@@ -24,5 +25,18 @@ export class TimetableService {
 
   validate(timetableData: any): Observable<any> {
     return this.api.post(`${this.endpoint}/validate`, { timetableData });
+  }
+
+  // Stocker le dernier résultat généré
+  setLastGeneratedResult(result: any): void {
+    this.lastGeneratedResult = result;
+  }
+
+  // Récupérer le dernier résultat généré
+  getLastGeneratedSchedules(): Observable<any> {
+    return new Observable(observer => {
+      observer.next(this.lastGeneratedResult);
+      observer.complete();
+    });
   }
 }

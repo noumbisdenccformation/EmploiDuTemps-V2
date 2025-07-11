@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { PdfService } from '../../services/pdf.service';
 
 @Component({
   selector: 'app-schedule-view',
@@ -56,7 +57,10 @@ import { Component, Input } from '@angular/core';
         <mat-tab label="📚 Par Classe" *ngIf="result.data?.byClass">
           <div class="tab-content">
             <div *ngFor="let class of getClasses()" class="schedule-section">
-              <h3>{{class}}</h3>
+              <div class="section-header">
+                <h3>{{class}}</h3>
+                <button (click)="generateClassPDF(class)" class="pdf-btn">📄 PDF</button>
+              </div>
               <div class="schedule-grid">
                 <div class="time-header">Heure</div>
                 <div *ngFor="let day of days" class="day-header">{{day}}</div>
@@ -80,7 +84,10 @@ import { Component, Input } from '@angular/core';
         <mat-tab label="👨‍🏫 Par Enseignant" *ngIf="result.data?.byTeacher">
           <div class="tab-content">
             <div *ngFor="let teacher of getTeachers()" class="schedule-section">
-              <h3>{{teacher}}</h3>
+              <div class="section-header">
+                <h3>{{teacher}}</h3>
+                <button (click)="generateTeacherPDF(teacher)" class="pdf-btn">📄 PDF</button>
+              </div>
               <div class="schedule-grid">
                 <div class="time-header">Heure</div>
                 <div *ngFor="let day of days" class="day-header">{{day}}</div>
@@ -158,6 +165,23 @@ import { Component, Input } from '@angular/core';
       border-bottom: 2px solid #1976d2; 
       padding-bottom: 8px; 
     }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .pdf-btn {
+      background: #4caf50;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .pdf-btn:hover {
+      background: #45a049;
+    }
   `]
 })
 export class ScheduleViewComponent {
@@ -168,6 +192,8 @@ export class ScheduleViewComponent {
     '08:00-09:00', '09:00-10:00', '10:00-11:00', '11:00-12:00',
     '12:30-13:30', '13:30-14:30', '14:30-15:30', '15:30-16:30'
   ];
+
+  constructor(private pdfService: PdfService) {}
 
   getClasses(): string[] {
     return this.result?.data?.byClass ? Object.keys(this.result.data.byClass) : [];
@@ -183,5 +209,67 @@ export class ScheduleViewComponent {
 
   getTeacherCourse(teacherName: string, day: string, time: string): any {
     return this.result?.data?.byTeacher?.[teacherName]?.[day]?.[time];
+  }
+
+  generateClassPDF(className: string) {
+    const schedule = this.convertClassScheduleToPDF(className);
+    this.pdfService.generateSchedulePDF(schedule, `Emploi du temps - ${className}`)
+      .subscribe(blob => {
+        this.pdfService.downloadPDF(blob, `emploi_temps_${className}.pdf`);
+      });
+  }
+
+  generateTeacherPDF(teacherName: string) {
+    const schedule = this.convertTeacherScheduleToPDF(teacherName);
+    this.pdfService.generateSchedulePDF(schedule, `Emploi du temps - ${teacherName}`)
+      .subscribe(blob => {
+        this.pdfService.downloadPDF(blob, `emploi_temps_${teacherName}.pdf`);
+      });
+  }
+
+  private convertClassScheduleToPDF(className: string): any[] {
+    const schedule = [];
+    const classData = this.result?.data?.byClass?.[className];
+    
+    if (classData) {
+      for (const day of this.days) {
+        for (const timeSlot of this.timeSlots) {
+          const course = classData[day]?.[timeSlot];
+          if (course) {
+            schedule.push({
+              day,
+              timeSlot,
+              subject: course.subject,
+              teacher: course.teacher,
+              room: course.room || ''
+            });
+          }
+        }
+      }
+    }
+    return schedule;
+  }
+
+  private convertTeacherScheduleToPDF(teacherName: string): any[] {
+    const schedule = [];
+    const teacherData = this.result?.data?.byTeacher?.[teacherName];
+    
+    if (teacherData) {
+      for (const day of this.days) {
+        for (const timeSlot of this.timeSlots) {
+          const course = teacherData[day]?.[timeSlot];
+          if (course) {
+            schedule.push({
+              day,
+              timeSlot,
+              subject: course.subject,
+              class: course.class,
+              room: course.room || ''
+            });
+          }
+        }
+      }
+    }
+    return schedule;
   }
 }

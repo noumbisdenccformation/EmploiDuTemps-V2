@@ -4,7 +4,7 @@ const ConflictResolver = require('../services/conflictResolver');
 const timetableController = {
   async generate(req, res) {
     try {
-      const { teachers, subjects, classes } = req.body;
+      const { teachers, subjects, classes, rooms, assignments } = req.body;
       
       // Validation des données d'entrée
       if (!teachers || !subjects || !classes) {
@@ -19,7 +19,7 @@ const timetableController = {
       // Détecter les conflits avant génération
       const conflicts = resolver.detectConflicts(teachers, subjects, classes);
       
-      const result = generator.generate(teachers, subjects, classes);
+      const result = generator.generate(teachers, subjects, classes, rooms, assignments);
       
       res.json({
         success: true,

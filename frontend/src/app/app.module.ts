@@ -29,6 +29,8 @@ import { TimetableComponent } from './components/timetable/timetable.component';
 import { DataInputComponent } from './components/data-input/data-input.component';
 import { ScheduleViewComponent } from './components/schedule-view/schedule-view.component';
 import { AuthComponent } from './components/auth/auth.component';
+import { RoomsComponent } from './components/rooms/rooms.component';
+import { AssignmentsComponent } from './components/assignments/assignments.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +40,9 @@ import { AuthComponent } from './components/auth/auth.component';
     TimetableComponent,
     DataInputComponent,
     ScheduleViewComponent,
-    AuthComponent
+    AuthComponent,
+    RoomsComponent,
+    AssignmentsComponent
   ],
   imports: [
     BrowserModule,

@@ -42,8 +42,11 @@ app.use('/api/admin', require('./routes/admin'));
 app.use('/api/teachers', require('./routes/teachers'));
 app.use('/api/subjects', require('./routes/subjects'));
 app.use('/api/classes', require('./routes/classes'));
+app.use('/api/rooms', require('./routes/rooms'));
+app.use('/api/assignments', require('./routes/assignments'));
 app.use('/api/timetables', require('./routes/timetables'));
 app.use('/api/conflicts', require('./routes/conflicts'));
+app.use('/api/pdf', require('./routes/pdf'));
 
 // Gestion des erreurs 404
 app.use('*', (req, res) => {
