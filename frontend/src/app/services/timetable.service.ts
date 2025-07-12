@@ -67,7 +67,7 @@ export class TimetableService {
       });
     });
 
-    // Placer les cours selon les affectations avec contraintes strictes
+    // Placer les cours avec respect strict des heures/semaine
     data.assignments?.forEach((assignment: any) => {
       const teacher = data.teachers?.find((t: any) => t.id === assignment.teacherId);
       const subject = data.subjects?.find((s: any) => s.id === assignment.subjectId);
@@ -79,21 +79,23 @@ export class TimetableService {
         const maxPerDay = subject.maxPerDay || 2;
         
         let hoursPlaced = 0;
+        let dayIndex = 0;
         
-        // Répartir les heures sur les jours de la semaine
-        for (let dayIndex = 0; dayIndex < days.length && hoursPlaced < hoursNeeded; dayIndex++) {
+        // Placer exactement le nombre d'heures requis
+        while (hoursPlaced < hoursNeeded && dayIndex < days.length) {
           const day = days[dayIndex];
           
-          // Calculer combien d'heures placer ce jour
-          const remainingHours = hoursNeeded - hoursPlaced;
-          const remainingDays = days.length - dayIndex;
-          const hoursForToday = Math.min(
-            maxPerDay,
-            Math.ceil(remainingHours / remainingDays)
-          );
+          // Compter les cours déjà placés ce jour pour cette matière dans cette classe
+          let dailyCount = 0;
+          timeSlots.forEach(slot => {
+            const existingCourse = result.data.byClass[classe.name][day][slot];
+            if (existingCourse && existingCourse.subject === subject.name) {
+              dailyCount++;
+            }
+          });
           
-          // Placer les heures pour ce jour
-          for (let h = 0; h < hoursForToday && hoursPlaced < hoursNeeded; h++) {
+          // Placer des cours ce jour si possible
+          while (dailyCount < maxPerDay && hoursPlaced < hoursNeeded) {
             // Trouver un créneau libre
             const availableSlot = timeSlots.find(slot => 
               !result.data.byClass[classe.name][day][slot] && 
@@ -119,8 +121,13 @@ export class TimetableService {
               };
               
               hoursPlaced++;
+              dailyCount++;
+            } else {
+              break; // Pas de créneau libre ce jour
             }
           }
+          
+          dayIndex++;
         }
       }
     });
