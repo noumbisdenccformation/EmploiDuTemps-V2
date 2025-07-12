@@ -6,9 +6,9 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class DataService {
   private teachersSubject = new BehaviorSubject<any[]>([
-    { id: 1, firstName: 'Jean', lastName: 'Dupont' },
-    { id: 2, firstName: 'Marie', lastName: 'Martin' },
-    { id: 3, firstName: 'Pierre', lastName: 'Durand' }
+    { id: 1, firstName: 'Ernest', lastName: 'OUANDIÉ' },
+    { id: 2, firstName: 'UM', lastName: 'NYOBE' },
+    { id: 3, firstName: 'MARTIN PAUL', lastName: 'SAMBA' }
   ]);
 
   private subjectsSubject = new BehaviorSubject<any[]>([

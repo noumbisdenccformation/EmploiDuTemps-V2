@@ -44,9 +44,9 @@ export class TimetableComponent implements OnInit {
     // Données par défaut pour test
     const defaultData = {
       teachers: [
-        { id: 1, firstName: 'Jean', lastName: 'Dupont', subjects: [{ id: 1 }] },
-        { id: 2, firstName: 'Marie', lastName: 'Martin', subjects: [{ id: 2 }] },
-        { id: 3, firstName: 'Pierre', lastName: 'Durand', subjects: [{ id: 2 }] }
+        { id: 1, firstName: 'Ernest', lastName: 'OUANDIÉ', subjects: [{ id: 1 }] },
+        { id: 2, firstName: 'UM', lastName: 'NYOBE', subjects: [{ id: 2 }] },
+        { id: 3, firstName: 'MARTIN PAUL', lastName: 'SAMBA', subjects: [{ id: 2 }] }
       ],
       subjects: [
         { id: 1, name: 'Mathématiques', duration: 1 },
