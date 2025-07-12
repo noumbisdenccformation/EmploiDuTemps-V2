@@ -29,6 +29,16 @@ import { DataService } from '../../services/data.service';
               <!-- Disponibilités -->
               <div class="availability-section">
                 <h4>📅 Disponibilités</h4>
+                
+                <!-- Option toute la semaine -->
+                <div class="week-availability">
+                  <label>
+                    <input type="checkbox" [checked]="isTeacherAvailableAllWeek(teacher.id)" 
+                           (change)="toggleTeacherAllWeek(teacher.id, $any($event.target).checked)">
+                    <strong>Toute la semaine (8h-16h30)</strong>
+                  </label>
+                </div>
+                
                 <div *ngFor="let day of days" class="day-availability">
                   <label>
                     <input type="checkbox" [checked]="isTeacherAvailable(teacher.id, day)" 
@@ -230,6 +240,19 @@ import { DataService } from '../../services/data.service';
       margin-top: 8px;
       display: block;
     }
+    .week-availability {
+      background: #e3f2fd;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      border-left: 4px solid #2196f3;
+    }
+    .week-availability label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
     .assignment-card {
       width: 100%;
       margin: 5px 0;
@@ -382,6 +405,33 @@ export class AssignmentsComponent implements OnInit {
   updateTeacherSlot(teacherId: number, day: string, slotIndex: number, type: string, value: string) {
     if (this.teacherAvailability[teacherId]?.[day]?.[slotIndex]) {
       this.teacherAvailability[teacherId][day][slotIndex][type] = value;
+    }
+  }
+
+  // Gestion "toute la semaine"
+  isTeacherAvailableAllWeek(teacherId: number): boolean {
+    if (!this.teacherAvailability[teacherId]) return false;
+    return this.days.every(day => 
+      this.teacherAvailability[teacherId][day] && 
+      this.teacherAvailability[teacherId][day].length > 0
+    );
+  }
+
+  toggleTeacherAllWeek(teacherId: number, checked: boolean) {
+    if (!this.teacherAvailability[teacherId]) {
+      this.teacherAvailability[teacherId] = {};
+    }
+    
+    if (checked) {
+      // Activer tous les jours avec horaires standards
+      this.days.forEach(day => {
+        this.teacherAvailability[teacherId][day] = [{ start: '08:00', end: '16:30' }];
+      });
+    } else {
+      // Désactiver tous les jours
+      this.days.forEach(day => {
+        delete this.teacherAvailability[teacherId][day];
+      });
     }
   }
 

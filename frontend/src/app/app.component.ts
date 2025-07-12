@@ -12,8 +12,8 @@ export class AppComponent {
   
   menuItems = [
     { name: 'Emploi du temps', route: '/timetable', icon: 'schedule' },
-    { name: 'Salles', route: '/rooms', icon: 'meeting_room' },
     { name: 'Affectations', route: '/assignments', icon: 'assignment' }
+    // { name: 'Salles', route: '/rooms', icon: 'meeting_room' }, // Prochaine version
   ];
 
   constructor(
