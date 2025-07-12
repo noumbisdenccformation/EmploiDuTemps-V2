@@ -45,6 +45,14 @@ import { DataService } from '../../services/data.service';
           <mat-icon>info</mat-icon>
           <span>Veuillez d'abord créer des affectations dans la page "Affectations"</span>
         </div>
+        
+        <div class="debug-info" style="margin-top: 20px; padding: 10px; background: #f0f0f0; border-radius: 4px;">
+          <h4>Debug Info:</h4>
+          <p>Assignments count: {{assignmentCount}}</p>
+          <p>Teachers count: {{teacherCount}}</p>
+          <p>Subjects count: {{subjectCount}}</p>
+          <p>Classes count: {{classCount}}</p>
+        </div>
       </mat-card-content>
     </mat-card>
   `,
@@ -86,6 +94,13 @@ export class DataInputComponent implements OnInit {
 
   ngOnInit() {
     this.refreshData();
+    // Auto-génération si des affectations existent
+    setTimeout(() => {
+      if (this.assignmentCount > 0) {
+        console.log('Auto-génération avec', this.assignmentCount, 'affectations');
+        this.generateData();
+      }
+    }, 1000);
   }
 
   refreshData() {
@@ -121,9 +136,12 @@ export class DataInputComponent implements OnInit {
       const assignments = this.assignmentService.getAssignments();
       
       if (assignments.length === 0) {
+        console.warn('Aucune affectation définie');
         alert('Aucune affectation définie. Veuillez créer des affectations dans la page "Affectations".');
         return;
       }
+      
+      console.log('Affectations trouvées:', assignments);
       
       const data = {
         teachers: this.getTeachersFromAssignments(assignments),

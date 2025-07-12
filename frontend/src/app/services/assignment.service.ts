@@ -8,7 +8,8 @@ export class AssignmentService {
   private assignmentsSubject = new BehaviorSubject<any[]>([
     { teacherId: 1, subjectId: 1, classId: 1, hoursPerWeek: 2 },
     { teacherId: 2, subjectId: 2, classId: 1, hoursPerWeek: 1 },
-    { teacherId: 3, subjectId: 2, classId: 2, hoursPerWeek: 1 }
+    { teacherId: 3, subjectId: 2, classId: 2, hoursPerWeek: 1 },
+    { teacherId: 1, subjectId: 1, classId: 2, hoursPerWeek: 2 }
   ]);
 
   assignments$ = this.assignmentsSubject.asObservable();
