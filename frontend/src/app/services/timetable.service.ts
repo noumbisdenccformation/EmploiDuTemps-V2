@@ -67,7 +67,7 @@ export class TimetableService {
       });
     });
 
-    // Placer les cours selon les affectations avec respect des contraintes
+    // Placer les cours selon les affectations - RESPECT TOTAL des heures/semaine
     data.assignments?.forEach((assignment: any) => {
       const teacher = data.teachers?.find((t: any) => t.id === assignment.teacherId);
       const subject = data.subjects?.find((s: any) => s.id === assignment.subjectId);
@@ -75,56 +75,68 @@ export class TimetableService {
 
       if (teacher && subject && classe) {
         const teacherName = `${teacher.firstName} ${teacher.lastName}`;
-        const hoursNeeded = Math.min(assignment.hoursPerWeek || 1, 10); // Limite à 10h max
+        const hoursNeeded = assignment.hoursPerWeek || 1; // RESPECTER EXACTEMENT
         const maxPerDay = subject.maxPerDay || 2;
         
-        let hoursPlaced = 0;
-        let dayIndex = 0;
+        console.log(`Placement de ${hoursNeeded}h de ${subject.name} pour ${classe.name}`);
         
-        while (hoursPlaced < hoursNeeded && dayIndex < days.length * 2) {
-          const day = days[dayIndex % days.length];
-          let dailyCount = 0;
+        let hoursPlaced = 0;
+        let attempts = 0;
+        
+        // Boucle jusqu'à placer TOUTES les heures requises
+        while (hoursPlaced < hoursNeeded && attempts < 50) {
+          attempts++;
           
-          // Compter les cours déjà placés ce jour pour cette matière/classe
-          timeSlots.forEach(slot => {
-            if (result.data.byClass[classe.name][day][slot]?.subject === subject.name) {
-              dailyCount++;
-            }
-          });
-          
-          // Placer les cours pour ce jour (max selon contrainte)
-          const canPlaceToday = Math.min(maxPerDay - dailyCount, hoursNeeded - hoursPlaced);
-          
-          for (let i = 0; i < canPlaceToday; i++) {
-            // Trouver un créneau libre
-            const availableSlot = timeSlots.find(slot => 
-              !result.data.byClass[classe.name][day][slot] && 
-              !result.data.byTeacher[teacherName][day][slot]
-            );
+          // Parcourir tous les jours
+          for (let dayIndex = 0; dayIndex < days.length && hoursPlaced < hoursNeeded; dayIndex++) {
+            const day = days[dayIndex];
             
-            if (availableSlot) {
-              const courseInfo = {
-                subject: subject.name,
-                teacher: teacherName,
-                class: classe.name,
-                room: `Salle ${(hoursPlaced % 4) + 1}`
-              };
-
-              result.data.byClass[classe.name][day][availableSlot] = {
-                ...courseInfo,
-                type: 'class_view'
-              };
-
-              result.data.byTeacher[teacherName][day][availableSlot] = {
-                ...courseInfo,
-                type: 'teacher_view'
-              };
+            // Compter les cours déjà placés ce jour pour cette matière/classe
+            let dailyCount = 0;
+            timeSlots.forEach(slot => {
+              if (result.data.byClass[classe.name][day][slot]?.subject === subject.name) {
+                dailyCount++;
+              }
+            });
+            
+            // Placer autant de cours que possible ce jour (dans la limite maxPerDay)
+            while (dailyCount < maxPerDay && hoursPlaced < hoursNeeded) {
+              // Trouver un créneau libre
+              const availableSlot = timeSlots.find(slot => 
+                !result.data.byClass[classe.name][day][slot] && 
+                !result.data.byTeacher[teacherName][day][slot]
+              );
               
-              hoursPlaced++;
+              if (availableSlot) {
+                const courseInfo = {
+                  subject: subject.name,
+                  teacher: teacherName,
+                  class: classe.name,
+                  room: `Salle ${(hoursPlaced % 4) + 1}`
+                };
+
+                result.data.byClass[classe.name][day][availableSlot] = {
+                  ...courseInfo,
+                  type: 'class_view'
+                };
+
+                result.data.byTeacher[teacherName][day][availableSlot] = {
+                  ...courseInfo,
+                  type: 'teacher_view'
+                };
+                
+                hoursPlaced++;
+                dailyCount++;
+                console.log(`Placé ${hoursPlaced}/${hoursNeeded}h de ${subject.name} le ${day} à ${availableSlot}`);
+              } else {
+                break; // Pas de créneau libre ce jour
+              }
             }
           }
-          
-          dayIndex++;
+        }
+        
+        if (hoursPlaced < hoursNeeded) {
+          console.warn(`ATTENTION: Seulement ${hoursPlaced}/${hoursNeeded}h placées pour ${subject.name} - ${classe.name}`);
         }
       }
     });
