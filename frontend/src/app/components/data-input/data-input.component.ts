@@ -89,47 +89,62 @@ export class DataInputComponent implements OnInit {
   }
 
   refreshData() {
-    const assignments = this.assignmentService.getAssignments();
-    this.assignmentCount = assignments.length;
-    
-    // Compter les enseignants uniques
-    const teacherIds = [...new Set(assignments.map(a => a.teacherId))];
-    this.teacherCount = teacherIds.length;
-    
-    // Compter les matières uniques
-    const subjectIds = [...new Set(assignments.map(a => a.subjectId))];
-    this.subjectCount = subjectIds.length;
-    
-    // Compter les classes uniques
-    const classIds = [...new Set(assignments.map(a => a.classId))];
-    this.classCount = classIds.length;
-    
-    console.log('Données actualisées:', {
-      teachers: this.teacherCount,
-      subjects: this.subjectCount,
-      classes: this.classCount,
-      assignments: this.assignmentCount
-    });
+    try {
+      const assignments = this.assignmentService.getAssignments();
+      this.assignmentCount = assignments.length;
+      
+      // Compter les enseignants uniques
+      const teacherIds = [...new Set(assignments.map(a => a.teacherId))];
+      this.teacherCount = teacherIds.length;
+      
+      // Compter les matières uniques
+      const subjectIds = [...new Set(assignments.map(a => a.subjectId))];
+      this.subjectCount = subjectIds.length;
+      
+      // Compter les classes uniques
+      const classIds = [...new Set(assignments.map(a => a.classId))];
+      this.classCount = classIds.length;
+      
+      console.log('Données actualisées:', {
+        teachers: this.teacherCount,
+        subjects: this.subjectCount,
+        classes: this.classCount,
+        assignments: this.assignmentCount
+      });
+    } catch (error) {
+      console.error('Erreur lors de l\'actualisation:', error);
+    }
   }
 
   generateData() {
-    const assignments = this.assignmentService.getAssignments();
-    
-    const data = {
-      teachers: this.getTeachersFromAssignments(assignments),
-      subjects: this.getSubjectsFromAssignments(assignments),
-      classes: this.getClassesFromAssignments(assignments),
-      rooms: [
-        { id: 1, name: 'Salle A1', type: 'classroom', status: 'unique', capacity: 30 },
-        { id: 2, name: 'Salle A2', type: 'classroom', status: 'unique', capacity: 30 },
-        { id: 3, name: 'Labo Chimie', type: 'laboratory', status: 'commune', capacity: 20 },
-        { id: 4, name: 'Amphi 1', type: 'amphitheater', status: 'commune', capacity: 100 }
-      ],
-      assignments: assignments
-    };
+    try {
+      const assignments = this.assignmentService.getAssignments();
+      
+      if (assignments.length === 0) {
+        alert('Aucune affectation définie. Veuillez créer des affectations dans la page "Affectations".');
+        return;
+      }
+      
+      const data = {
+        teachers: this.getTeachersFromAssignments(assignments),
+        subjects: this.getSubjectsFromAssignments(assignments),
+        classes: this.getClassesFromAssignments(assignments),
+        rooms: [
+          { id: 1, name: 'Salle A1', type: 'classroom', status: 'unique', capacity: 30 },
+          { id: 2, name: 'Salle A2', type: 'classroom', status: 'unique', capacity: 30 },
+          { id: 3, name: 'Labo Chimie', type: 'laboratory', status: 'commune', capacity: 20 },
+          { id: 4, name: 'Amphi 1', type: 'amphitheater', status: 'commune', capacity: 100 }
+        ],
+        assignments: assignments
+      };
 
-    console.log('Génération avec', assignments.length, 'affectations');
-    this.dataGenerated.emit(data);
+      console.log('Génération avec', assignments.length, 'affectations');
+      console.log('Données à envoyer:', data);
+      this.dataGenerated.emit(data);
+    } catch (error) {
+      console.error('Erreur lors de la génération:', error);
+      alert('Erreur lors de la génération de l\'emploi du temps');
+    }
   }
 
   getTeachersFromAssignments(assignments: any[]) {
@@ -137,9 +152,7 @@ export class DataInputComponent implements OnInit {
       ...teacher,
       subjects: assignments
         .filter(a => a.teacherId === teacher.id)
-        .map(a => ({ id: a.subjectId })),
-      availability: this.assignmentService.getTeacherAvailability ? 
-        this.assignmentService.getTeacherAvailability(teacher.id) : {}
+        .map(a => ({ id: a.subjectId }))
     }));
   }
 
