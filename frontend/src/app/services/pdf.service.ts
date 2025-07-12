@@ -23,13 +23,27 @@ export class PdfService {
       { responseType: 'blob' }
     ).pipe(
       catchError(error => {
-        console.warn('Backend PDF non disponible, génération HTML:', error);
-        // Fallback vers HTML
-        const htmlContent = this.generateScheduleHTML(schedule, title);
-        const blob = new Blob([htmlContent], { type: 'text/html' });
-        return of(blob);
+        console.warn('Backend PDF non disponible, ouverture pour impression:', error);
+        // Ouvrir dans une nouvelle fenêtre pour impression
+        this.openPrintWindow(schedule, title);
+        // Retourner un blob vide
+        return of(new Blob([''], { type: 'text/plain' }));
       })
     );
+  }
+
+  private openPrintWindow(schedule: any[], title: string): void {
+    const htmlContent = this.generateScheduleHTML(schedule, title);
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+      printWindow.focus();
+      // Lancer l'impression automatiquement
+      setTimeout(() => {
+        printWindow.print();
+      }, 500);
+    }
   }
 
   private generateScheduleHTML(schedule: any[], title: string): string {
@@ -113,10 +127,14 @@ export class PdfService {
   }
 
   downloadPDF(blob: Blob, filename: string): void {
+    // Si le blob est vide (cas d'impression), ne rien faire
+    if (blob.size === 0) {
+      return;
+    }
+    
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    // Garder l'extension PDF
     link.download = filename;
     document.body.appendChild(link);
     link.click();
