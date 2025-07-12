@@ -27,9 +27,11 @@ mat-toolbar {
 }
 
 .logo {
-  height: 40px;
+  height: 45px;
   width: auto;
   margin-left: 20px;
+  object-fit: contain;
+  filter: brightness(1.1) contrast(1.1);
 }
 
 .footer {
@@ -52,8 +54,10 @@ mat-toolbar {
 }
 
 .footer-logo-img {
-  height: 30px;
+  height: 35px;
   width: auto;
+  object-fit: contain;
+  filter: brightness(1.2) contrast(1.1);
 }
 
 @media (max-width: 768px) {
@@ -64,7 +68,11 @@ mat-toolbar {
   }
   
   .logo {
-    height: 35px;
+    height: 40px;
+  }
+  
+  .footer-logo-img {
+    height: 30px;
   }
 }
 
