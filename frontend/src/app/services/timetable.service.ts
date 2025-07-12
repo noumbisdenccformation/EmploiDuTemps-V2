@@ -67,9 +67,7 @@ export class TimetableService {
       });
     });
 
-    // ALGORITHME SIMPLE : Placer exactement les heures demandées
-    const placedCourses = new Map(); // Suivi des cours placés
-    
+    // NOUVEL ALGORITHME : Placement intelligent des cours
     data.assignments?.forEach((assignment: any) => {
       const teacher = data.teachers?.find((t: any) => t.id === assignment.teacherId);
       const subject = data.subjects?.find((s: any) => s.id === assignment.subjectId);
@@ -77,49 +75,47 @@ export class TimetableService {
 
       if (teacher && subject && classe) {
         const teacherName = `${teacher.firstName} ${teacher.lastName}`;
-        const hoursNeeded = assignment.hoursPerWeek || 1;
+        const totalHours = assignment.hoursPerWeek || 1;
         const maxPerDay = subject.maxPerDay || 2;
-        const key = `${classe.name}-${subject.name}`;
         
-        if (!placedCourses.has(key)) {
-          placedCourses.set(key, 0);
-        }
+        let coursesPlaced = 0;
         
-        let hoursPlaced = placedCourses.get(key);
-        
-        // Placer les heures restantes
-        for (let dayIndex = 0; dayIndex < days.length && hoursPlaced < hoursNeeded; dayIndex++) {
-          const day = days[dayIndex];
-          let dailyPlaced = 0;
+        // Répartir les heures sur les jours
+        for (let day of days) {
+          if (coursesPlaced >= totalHours) break;
           
-          // Placer jusqu'à maxPerDay cours ce jour
-          for (let slotIndex = 0; slotIndex < timeSlots.length && dailyPlaced < maxPerDay && hoursPlaced < hoursNeeded; slotIndex++) {
-            const slot = timeSlots[slotIndex];
+          let dailyCount = 0;
+          
+          // Placer les cours pour ce jour
+          for (let slot of timeSlots) {
+            if (coursesPlaced >= totalHours || dailyCount >= maxPerDay) break;
             
-            // Vérifier si le créneau est libre
-            if (!result.data.byClass[classe.name][day][slot] && 
-                !result.data.byTeacher[teacherName][day][slot]) {
-              
+            // Vérifier disponibilité classe ET enseignant
+            const classSlotFree = !result.data.byClass[classe.name][day][slot];
+            const teacherSlotFree = !result.data.byTeacher[teacherName][day][slot];
+            
+            if (classSlotFree && teacherSlotFree) {
               const courseInfo = {
                 subject: subject.name,
                 teacher: teacherName,
                 class: classe.name,
-                room: `Salle ${(hoursPlaced % 4) + 1}`
+                room: `Salle ${(coursesPlaced % 3) + 1}`
               };
 
+              // Placer le cours
               result.data.byClass[classe.name][day][slot] = courseInfo;
               result.data.byTeacher[teacherName][day][slot] = {
-                ...courseInfo,
-                class: classe.name
+                subject: subject.name,
+                class: classe.name,
+                teacher: teacherName,
+                room: courseInfo.room
               };
               
-              hoursPlaced++;
-              dailyPlaced++;
+              coursesPlaced++;
+              dailyCount++;
             }
           }
         }
-        
-        placedCourses.set(key, hoursPlaced);
       }
     });
 
