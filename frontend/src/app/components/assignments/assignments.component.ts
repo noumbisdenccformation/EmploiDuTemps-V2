@@ -75,8 +75,8 @@ import { DataService } from '../../services/data.service';
         <mat-card-content>
           <div class="add-form">
             <input [(ngModel)]="newSubject.name" placeholder="Nom de la matière">
-            <input [(ngModel)]="newSubject.duration" type="number" placeholder="Durée (h)" step="0.5">
-            <input [(ngModel)]="newSubject.maxPerDay" type="number" placeholder="Max par jour" min="1" max="4">
+            <input [(ngModel)]="newSubject.duration" type="number" placeholder="Durée (h)" step="1" min="1">
+            <input [(ngModel)]="newSubject.maxPerDay" type="number" placeholder="Max par jour" step="1" min="1" max="8">
             <button (click)="addSubject()">Ajouter Matière</button>
           </div>
           <div class="items-list">
@@ -132,7 +132,7 @@ import { DataService } from '../../services/data.service';
                 {{class.name}}
               </option>
             </select>
-            <input [(ngModel)]="newAssignment.hoursPerWeek" type="number" placeholder="Heures/semaine" step="0.5">
+            <input [(ngModel)]="newAssignment.hoursPerWeek" type="number" placeholder="Heures/semaine" step="1" min="1">
             <button (click)="addAssignment()">Créer Affectation</button>
           </div>
           <div class="items-list">
