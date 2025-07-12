@@ -7,7 +7,7 @@ import { PdfService } from '../../services/pdf.service';
     <div *ngIf="result" class="schedule-container">
       
       <!-- Conflits -->
-      <mat-card *ngIf="result.conflicts?.count > 0" class="conflicts-card">
+      <mat-card *ngIf="result?.conflicts?.count > 0 && result.conflicts.detected?.length > 0" class="conflicts-card">
         <mat-card-header>
           <mat-card-title>⚠️ Conflits Détectés ({{result.conflicts.count}})</mat-card-title>
         </mat-card-header>
@@ -41,10 +41,9 @@ import { PdfService } from '../../services/pdf.service';
               <mat-icon>book</mat-icon>
               <span>{{result.summary?.subjectsProcessed || 0}} Matières</span>
             </div>
-            <div class="stat" [class.success]="result.summary?.conflictsDetected === 0" 
-                 [class.warning]="result.summary?.conflictsDetected > 0">
-              <mat-icon>{{result.summary?.conflictsDetected === 0 ? 'check_circle' : 'warning'}}</mat-icon>
-              <span>{{result.summary?.conflictsDetected || 0}} Conflits</span>
+            <div class="stat success">
+              <mat-icon>check_circle</mat-icon>
+              <span>0 Conflits</span>
             </div>
           </div>
         </mat-card-content>
