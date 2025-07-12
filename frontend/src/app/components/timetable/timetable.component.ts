@@ -49,8 +49,8 @@ export class TimetableComponent implements OnInit {
         { id: 3, firstName: 'MARTIN PAUL', lastName: 'SAMBA', subjects: [{ id: 2 }] }
       ],
       subjects: [
-        { id: 1, name: 'Mathématiques', duration: 1 },
-        { id: 2, name: 'Français', duration: 1 }
+        { id: 1, name: 'Mathématiques', duration: 10, maxPerDay: 1 },
+        { id: 2, name: 'Français', duration: 10, maxPerDay: 1 }
       ],
       classes: [
         { id: 1, name: '6ème A', subjects: [{ id: 1 }, { id: 2 }] },
@@ -61,10 +61,10 @@ export class TimetableComponent implements OnInit {
         { id: 2, name: 'Salle A2', type: 'classroom', status: 'unique', capacity: 30 }
       ],
       assignments: [
-        { teacherId: 1, subjectId: 1, classId: 1, hoursPerWeek: 2 },
-        { teacherId: 2, subjectId: 2, classId: 1, hoursPerWeek: 1 },
-        { teacherId: 3, subjectId: 2, classId: 2, hoursPerWeek: 1 },
-        { teacherId: 1, subjectId: 1, classId: 2, hoursPerWeek: 2 }
+        { teacherId: 1, subjectId: 1, classId: 1, hoursPerWeek: 10 },
+        { teacherId: 2, subjectId: 2, classId: 1, hoursPerWeek: 10 },
+        { teacherId: 3, subjectId: 2, classId: 2, hoursPerWeek: 10 },
+        { teacherId: 1, subjectId: 1, classId: 2, hoursPerWeek: 10 }
       ]
     };
     
