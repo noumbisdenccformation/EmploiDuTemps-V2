@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { ApiService } from './api.service';
 
 @Injectable({
@@ -12,15 +13,19 @@ export class TimetableService {
   constructor(private api: ApiService) {}
 
   generate(data: any): Observable<any> {
-    // Version fallback sans backend
-    console.log('Génération locale sans backend');
-    return new Observable(observer => {
-      setTimeout(() => {
-        const result = this.generateLocally(data);
-        observer.next(result);
-        observer.complete();
-      }, 1000);
-    });
+    // Essayer d'abord le backend, puis fallback local
+    return this.api.post(`${this.endpoint}/generate`, data).pipe(
+      catchError(error => {
+        console.warn('Backend non disponible, génération locale:', error);
+        return new Observable(observer => {
+          setTimeout(() => {
+            const result = this.generateLocally(data);
+            observer.next(result);
+            observer.complete();
+          }, 1000);
+        });
+      })
+    );
   }
 
   private generateLocally(data: any): any {

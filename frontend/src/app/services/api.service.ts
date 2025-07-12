@@ -7,9 +7,16 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = environment.apiUrl || 'http://localhost:3000/api';
+  private baseUrl = environment.apiUrl || 'http://localhost:3001/api';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    // Détection automatique de l'environnement
+    if (window.location.hostname !== 'localhost') {
+      this.baseUrl = 'https://emploi-temps-backend.onrender.com/api';
+    }
+  }
+
+
 
   get<T>(endpoint: string): Observable<T> {
     return this.http.get<T>(`${this.baseUrl}${endpoint}`);
