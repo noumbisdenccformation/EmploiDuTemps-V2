@@ -278,7 +278,7 @@ export class AssignmentsComponent implements OnInit {
   teacherAvailability: any = {};
   
   newTeacher = { firstName: '', lastName: '' };
-  newSubject = { name: '', duration: 1, maxPerDay: 2 };
+  newSubject = { name: '', duration: 1, maxPerDay: 1 };
   newClass = { name: '' };
   newAssignment = { teacherId: '', subjectId: '', classId: '', hoursPerWeek: 1 };
 
@@ -341,7 +341,7 @@ export class AssignmentsComponent implements OnInit {
   addSubject() {
     if (this.newSubject.name) {
       this.dataService.addSubject(this.newSubject);
-      this.newSubject = { name: '', duration: 1, maxPerDay: 2 };
+      this.newSubject = { name: '', duration: 1, maxPerDay: 1 };
     }
   }
 
