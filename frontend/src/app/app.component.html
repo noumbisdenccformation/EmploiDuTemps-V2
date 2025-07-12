@@ -19,11 +19,26 @@
       <button type="button" mat-icon-button (click)="drawer.toggle()">
         <mat-icon>menu</mat-icon>
       </button>
-      <span>{{title}} - V2.2 FORCE UPDATE</span>
+      <span>{{title}}</span>
+      <div class="header-right">
+        <img src="assets/logo-ncc.png" alt="NCC Formation" class="logo">
+      </div>
     </mat-toolbar>
     
     <div class="content">
       <router-outlet></router-outlet>
     </div>
+    
+    <!-- Pied de page -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="copyright">
+          <span>© 2024 NCCformation - Tous droits réservés</span>
+        </div>
+        <div class="footer-logo">
+          <img src="assets/logo-ncc.png" alt="NCC Formation" class="footer-logo-img">
+        </div>
+      </div>
+    </footer>
   </mat-sidenav-content>
 </mat-sidenav-container>
