@@ -6,8 +6,8 @@ import { PdfService } from '../../services/pdf.service';
   template: `
     <div *ngIf="result" class="schedule-container">
       
-      <!-- Conflits -->
-      <mat-card *ngIf="result?.conflicts?.count > 0 && result.conflicts.detected?.length > 0" class="conflicts-card">
+      <!-- Conflits masqués pour cette version -->
+      <mat-card *ngIf="false" class="conflicts-card">
         <mat-card-header>
           <mat-card-title>⚠️ Conflits Détectés ({{result.conflicts.count}})</mat-card-title>
         </mat-card-header>
@@ -48,6 +48,13 @@ import { PdfService } from '../../services/pdf.service';
           </div>
         </mat-card-content>
       </mat-card>
+
+      <!-- Bouton PDF Global -->
+      <div class="global-actions">
+        <button (click)="generateAllPDF()" class="pdf-all-btn">
+          📄 Générer tous les PDF
+        </button>
+      </div>
 
       <!-- Emplois du temps -->
       <mat-tab-group class="schedule-tabs">
@@ -181,6 +188,23 @@ import { PdfService } from '../../services/pdf.service';
     .pdf-btn:hover {
       background: #45a049;
     }
+    .global-actions {
+      text-align: center;
+      margin: 20px 0;
+    }
+    .pdf-all-btn {
+      background: #ff9800;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .pdf-all-btn:hover {
+      background: #f57c00;
+    }
   `]
 })
 export class ScheduleViewComponent {
@@ -270,5 +294,26 @@ export class ScheduleViewComponent {
       }
     }
     return schedule;
+  }
+
+  generateAllPDF() {
+    const allSchedules = [];
+    
+    // Ajouter tous les emplois du temps des classes
+    this.getClasses().forEach(className => {
+      const schedule = this.convertClassScheduleToPDF(className);
+      allSchedules.push({ schedule, title: `Emploi du temps - ${className}` });
+    });
+    
+    // Ajouter tous les emplois du temps des enseignants
+    this.getTeachers().forEach(teacherName => {
+      const schedule = this.convertTeacherScheduleToPDF(teacherName);
+      allSchedules.push({ schedule, title: `Emploi du temps - ${teacherName}` });
+    });
+    
+    this.pdfService.generateAllSchedulesPDF(allSchedules)
+      .subscribe(blob => {
+        this.pdfService.downloadPDF(blob, 'tous_les_emplois_du_temps.html');
+      });
   }
 }
