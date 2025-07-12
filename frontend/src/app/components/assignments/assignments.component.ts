@@ -81,7 +81,7 @@ import { DataService } from '../../services/data.service';
           </div>
           <div class="items-list">
             <div class="item-card" *ngFor="let subject of subjects">
-              {{subject.name}} ({{subject.duration}}h/sem, max {{subject.maxPerDay || 2}}/jour)
+              {{subject.name}} ({{subject.duration}}h/sem, max {{subject.maxPerDay || 1}}/jour)
               <button (click)="removeSubject(subject.id)" class="delete">×</button>
             </div>
           </div>
