@@ -111,19 +111,57 @@ export class PdfService {
       { responseType: 'blob' }
     ).pipe(
       catchError(error => {
-        console.warn('Backend PDF non disponible, génération HTML combinée:', error);
-        // Fallback vers HTML combiné
-        let combinedHTML = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Tous les Emplois du Temps</title><style>body{font-family:Arial,sans-serif;margin:20px}h1{text-align:center;color:#2c3e50;page-break-before:always}h1:first-child{page-break-before:auto}table{width:100%;border-collapse:collapse;margin:20px 0}th,td{border:1px solid #333;padding:8px;text-align:center}th{background-color:#3498db;color:white}.course{background-color:#f8f9fa}</style></head><body>`;
-        
-        schedules.forEach(({ schedule, title }) => {
-          combinedHTML += this.generateScheduleHTML(schedule, title).replace(/<!DOCTYPE html>[\s\S]*<body>/, '').replace('</body></html>', '');
-        });
-        
-        combinedHTML += '</body></html>';
-        const blob = new Blob([combinedHTML], { type: 'text/html' });
-        return of(blob);
+        console.warn('Backend PDF non disponible, ouverture pour impression globale:', error);
+        // Ouvrir tous les emplois du temps pour impression
+        this.openAllPrintWindows(schedules);
+        // Retourner un blob vide
+        return of(new Blob([''], { type: 'text/plain' }));
       })
     );
+  }
+
+  private openAllPrintWindows(schedules: { schedule: any[], title: string }[]): void {
+    // Créer un document combiné avec tous les emplois du temps
+    let combinedHTML = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Tous les Emplois du Temps</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { text-align: center; color: #2c3e50; page-break-before: always; margin-top: 40px; }
+    h1:first-child { page-break-before: auto; margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    th, td { border: 1px solid #333; padding: 8px; text-align: center; }
+    th { background-color: #3498db; color: white; }
+    .course { background-color: #f8f9fa; }
+    @media print { 
+      h1 { page-break-before: always; }
+      h1:first-child { page-break-before: auto; }
+    }
+  </style>
+</head>
+<body>`;
+    
+    schedules.forEach(({ schedule, title }) => {
+      const scheduleHTML = this.generateScheduleHTML(schedule, title)
+        .replace(/<!DOCTYPE html>[\s\S]*<body>/, '')
+        .replace('</body></html>', '');
+      combinedHTML += scheduleHTML;
+    });
+    
+    combinedHTML += '</body></html>';
+    
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(combinedHTML);
+      printWindow.document.close();
+      printWindow.focus();
+      // Lancer l'impression automatiquement
+      setTimeout(() => {
+        printWindow.print();
+      }, 1000);
+    }
   }
 
   downloadPDF(blob: Blob, filename: string): void {
