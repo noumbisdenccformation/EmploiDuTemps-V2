@@ -258,10 +258,9 @@ class TimetableGenerator {
     const [startTime, endTime] = timeSlot.split('-');
     
     // Vérifier si le créneau complet est dans au moins une des disponibilités
-    return dayAvailability.some(slot => {
-      // Le créneau doit être entièrement dans la disponibilité
-      return startTime >= slot.start && endTime <= slot.end;
-    });
+    return Array.isArray(dayAvailability) ? 
+      dayAvailability.some(slot => startTime >= slot.start && endTime <= slot.end) :
+      startTime >= dayAvailability.start && endTime <= dayAvailability.end;
   }
 
   validateTimetable(timetableData) {

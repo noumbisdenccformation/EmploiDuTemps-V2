@@ -17,6 +17,12 @@ export class AssignmentService {
     return this.assignmentsSubject.value;
   }
 
+  getTeacherAvailability(teacherId: number) {
+    // Cette méthode sera appelée depuis data-input
+    // Pour l'instant, retourner un objet vide
+    return {};
+  }
+
   addAssignment(assignment: any) {
     const current = this.assignmentsSubject.value;
     this.assignmentsSubject.next([...current, assignment]);

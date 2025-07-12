@@ -137,7 +137,9 @@ export class DataInputComponent implements OnInit {
       ...teacher,
       subjects: assignments
         .filter(a => a.teacherId === teacher.id)
-        .map(a => ({ id: a.subjectId }))
+        .map(a => ({ id: a.subjectId })),
+      availability: this.assignmentService.getTeacherAvailability ? 
+        this.assignmentService.getTeacherAvailability(teacher.id) : {}
     }));
   }
 

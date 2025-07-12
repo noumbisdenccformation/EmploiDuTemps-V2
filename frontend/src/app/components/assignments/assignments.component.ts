@@ -36,26 +36,19 @@ import { DataService } from '../../services/data.service';
                     {{day}}
                   </label>
                   <div *ngIf="isTeacherAvailable(teacher.id, day)" class="time-slots">
-                    <select [value]="getTeacherStartTime(teacher.id, day)" 
-                            (change)="updateTeacherTime(teacher.id, day, 'start', $any($event.target).value)">
-                      <option value="08:00">08:00</option>
-                      <option value="09:00">09:00</option>
-                      <option value="10:00">10:00</option>
-                      <option value="11:00">11:00</option>
-                      <option value="12:30">12:30</option>
-                      <option value="13:30">13:30</option>
-                      <option value="14:30">14:30</option>
-                    </select>
-                    <span> à </span>
-                    <select [value]="getTeacherEndTime(teacher.id, day)" 
-                            (change)="updateTeacherTime(teacher.id, day, 'end', $any($event.target).value)">
-                      <option value="12:00">12:00</option>
-                      <option value="13:30">13:30</option>
-                      <option value="14:30">14:30</option>
-                      <option value="15:30">15:30</option>
-                      <option value="16:30">16:30</option>
-                      <option value="17:30">17:30</option>
-                    </select>
+                    <div *ngFor="let slot of getTeacherTimeSlots(teacher.id, day); let i = index" class="time-slot">
+                      <input type="time" [value]="slot.start" 
+                             (change)="updateTeacherSlot(teacher.id, day, i, 'start', $any($event.target).value)"
+                             placeholder="Début">
+                      <span> à </span>
+                      <input type="time" [value]="slot.end" 
+                             (change)="updateTeacherSlot(teacher.id, day, i, 'end', $any($event.target).value)"
+                             placeholder="Fin">
+                      <button (click)="removeTeacherSlot(teacher.id, day, i)" 
+                              *ngIf="getTeacherTimeSlots(teacher.id, day).length > 1" 
+                              class="remove-slot">-</button>
+                    </div>
+                    <button (click)="addTeacherSlot(teacher.id, day)" class="add-slot">+ Ajouter créneau</button>
                   </div>
                 </div>
               </div>
@@ -207,13 +200,35 @@ import { DataService } from '../../services/data.service';
       gap: 10px;
     }
     .time-slots {
+      margin-left: 20px;
+      margin-top: 8px;
+    }
+    .time-slot {
       display: flex;
       align-items: center;
-      gap: 5px;
-      margin-left: 20px;
+      gap: 8px;
+      margin: 5px 0;
     }
-    .time-slots select {
+    .time-slot input {
       padding: 4px;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+    }
+    .add-slot, .remove-slot {
+      background: #2196f3;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .remove-slot {
+      background: #f44336;
+    }
+    .add-slot {
+      margin-top: 8px;
+      display: block;
     }
     .assignment-card {
       width: 100%;
@@ -354,23 +369,35 @@ export class AssignmentsComponent implements OnInit {
     }
     
     if (checked) {
-      this.teacherAvailability[teacherId][day] = { start: '08:00', end: '16:30' };
+      this.teacherAvailability[teacherId][day] = [{ start: '08:00', end: '12:00' }];
     } else {
       delete this.teacherAvailability[teacherId][day];
     }
   }
 
-  getTeacherStartTime(teacherId: number, day: string): string {
-    return this.teacherAvailability[teacherId]?.[day]?.start || '08:00';
+  getTeacherTimeSlots(teacherId: number, day: string): any[] {
+    return this.teacherAvailability[teacherId]?.[day] || [];
   }
 
-  getTeacherEndTime(teacherId: number, day: string): string {
-    return this.teacherAvailability[teacherId]?.[day]?.end || '16:30';
+  updateTeacherSlot(teacherId: number, day: string, slotIndex: number, type: string, value: string) {
+    if (this.teacherAvailability[teacherId]?.[day]?.[slotIndex]) {
+      this.teacherAvailability[teacherId][day][slotIndex][type] = value;
+    }
   }
 
-  updateTeacherTime(teacherId: number, day: string, type: string, value: string) {
+  addTeacherSlot(teacherId: number, day: string) {
+    if (!this.teacherAvailability[teacherId]) {
+      this.teacherAvailability[teacherId] = {};
+    }
+    if (!this.teacherAvailability[teacherId][day]) {
+      this.teacherAvailability[teacherId][day] = [];
+    }
+    this.teacherAvailability[teacherId][day].push({ start: '14:00', end: '16:00' });
+  }
+
+  removeTeacherSlot(teacherId: number, day: string, slotIndex: number) {
     if (this.teacherAvailability[teacherId]?.[day]) {
-      this.teacherAvailability[teacherId][day][type] = value;
+      this.teacherAvailability[teacherId][day].splice(slotIndex, 1);
     }
   }
 }
