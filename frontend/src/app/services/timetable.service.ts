@@ -67,8 +67,7 @@ export class TimetableService {
       });
     });
 
-    // Placer les cours selon les affectations
-    let slotIndex = 0;
+    // Placer les cours selon les affectations avec respect des contraintes
     data.assignments?.forEach((assignment: any) => {
       const teacher = data.teachers?.find((t: any) => t.id === assignment.teacherId);
       const subject = data.subjects?.find((s: any) => s.id === assignment.subjectId);
@@ -76,32 +75,56 @@ export class TimetableService {
 
       if (teacher && subject && classe) {
         const teacherName = `${teacher.firstName} ${teacher.lastName}`;
-        const hoursNeeded = assignment.hoursPerWeek || 1;
+        const hoursNeeded = Math.min(assignment.hoursPerWeek || 1, 10); // Limite à 10h max
+        const maxPerDay = subject.maxPerDay || 2;
+        
+        let hoursPlaced = 0;
+        let dayIndex = 0;
+        
+        while (hoursPlaced < hoursNeeded && dayIndex < days.length * 2) {
+          const day = days[dayIndex % days.length];
+          let dailyCount = 0;
+          
+          // Compter les cours déjà placés ce jour pour cette matière/classe
+          timeSlots.forEach(slot => {
+            if (result.data.byClass[classe.name][day][slot]?.subject === subject.name) {
+              dailyCount++;
+            }
+          });
+          
+          // Placer les cours pour ce jour (max selon contrainte)
+          const canPlaceToday = Math.min(maxPerDay - dailyCount, hoursNeeded - hoursPlaced);
+          
+          for (let i = 0; i < canPlaceToday; i++) {
+            // Trouver un créneau libre
+            const availableSlot = timeSlots.find(slot => 
+              !result.data.byClass[classe.name][day][slot] && 
+              !result.data.byTeacher[teacherName][day][slot]
+            );
+            
+            if (availableSlot) {
+              const courseInfo = {
+                subject: subject.name,
+                teacher: teacherName,
+                class: classe.name,
+                room: `Salle ${(hoursPlaced % 4) + 1}`
+              };
 
-        for (let i = 0; i < hoursNeeded; i++) {
-          const dayIndex = Math.floor(slotIndex / timeSlots.length) % days.length;
-          const timeIndex = slotIndex % timeSlots.length;
-          const day = days[dayIndex];
-          const timeSlot = timeSlots[timeIndex];
+              result.data.byClass[classe.name][day][availableSlot] = {
+                ...courseInfo,
+                type: 'class_view'
+              };
 
-          const courseInfo = {
-            subject: subject.name,
-            teacher: teacherName,
-            class: classe.name,
-            room: `Salle ${slotIndex % 3 + 1}`
-          };
-
-          result.data.byClass[classe.name][day][timeSlot] = {
-            ...courseInfo,
-            type: 'class_view'
-          };
-
-          result.data.byTeacher[teacherName][day][timeSlot] = {
-            ...courseInfo,
-            type: 'teacher_view'
-          };
-
-          slotIndex++;
+              result.data.byTeacher[teacherName][day][availableSlot] = {
+                ...courseInfo,
+                type: 'teacher_view'
+              };
+              
+              hoursPlaced++;
+            }
+          }
+          
+          dayIndex++;
         }
       }
     });

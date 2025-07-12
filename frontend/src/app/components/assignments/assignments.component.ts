@@ -35,7 +35,7 @@ import { DataService } from '../../services/data.service';
                   <label>
                     <input type="checkbox" [checked]="isTeacherAvailableAllWeek(teacher.id)" 
                            (change)="toggleTeacherAllWeek(teacher.id, $any($event.target).checked)">
-                    <strong>Toute la semaine (8h-16h30)</strong>
+                    <strong>Toute la semaine</strong>
                   </label>
                 </div>
                 
@@ -423,9 +423,9 @@ export class AssignmentsComponent implements OnInit {
     }
     
     if (checked) {
-      // Activer tous les jours avec horaires standards
+      // Activer tous les jours avec horaires par défaut
       this.days.forEach(day => {
-        this.teacherAvailability[teacherId][day] = [{ start: '08:00', end: '16:30' }];
+        this.teacherAvailability[teacherId][day] = [{ start: '08:00', end: '17:00' }];
       });
     } else {
       // Désactiver tous les jours
