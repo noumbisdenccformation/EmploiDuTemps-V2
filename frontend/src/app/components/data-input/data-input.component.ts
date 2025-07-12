@@ -47,11 +47,11 @@ import { DataService } from '../../services/data.service';
         </div>
         
         <div class="debug-info" style="margin-top: 20px; padding: 10px; background: #f0f0f0; border-radius: 4px;">
-          <h4>Debug Info:</h4>
-          <p>Assignments count: {{assignmentCount}}</p>
-          <p>Teachers count: {{teacherCount}}</p>
-          <p>Subjects count: {{subjectCount}}</p>
-          <p>Classes count: {{classCount}}</p>
+          <h4>Informations de débogage :</h4>
+          <p>Nombre d'affectations : {{assignmentCount}}</p>
+          <p>Nombre d'enseignants : {{teacherCount}}</p>
+          <p>Nombre de matières : {{subjectCount}}</p>
+          <p>Nombre de classes : {{classCount}}</p>
         </div>
       </mat-card-content>
     </mat-card>

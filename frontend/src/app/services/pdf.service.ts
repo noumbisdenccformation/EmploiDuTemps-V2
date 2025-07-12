@@ -116,8 +116,8 @@ export class PdfService {
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    // Forcer le téléchargement avec extension correcte
-    link.download = filename.endsWith('.html') ? filename : filename.replace('.pdf', '.html');
+    // Garder l'extension PDF
+    link.download = filename;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
