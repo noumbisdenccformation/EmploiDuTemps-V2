@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
@@ -27,10 +27,7 @@ export class PdfService {
         // Fallback vers HTML
         const htmlContent = this.generateScheduleHTML(schedule, title);
         const blob = new Blob([htmlContent], { type: 'text/html' });
-        return new Observable(observer => {
-          observer.next(blob);
-          observer.complete();
-        });
+        return of(blob);
       })
     );
   }
@@ -110,10 +107,7 @@ export class PdfService {
         
         combinedHTML += '</body></html>';
         const blob = new Blob([combinedHTML], { type: 'text/html' });
-        return new Observable(observer => {
-          observer.next(blob);
-          observer.complete();
-        });
+        return of(blob);
       })
     );
   }
