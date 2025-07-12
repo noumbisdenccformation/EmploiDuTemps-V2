@@ -5,6 +5,12 @@ class TimetableGenerator {
       '12:30-13:30', '13:30-14:30', '14:30-15:30', '15:30-16:30'
     ];
     this.days = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
+    
+    // Limites par défaut d'heures de cours
+    this.defaultLimits = {
+      maxHoursPerDay: 4,
+      maxHoursPerWeek: 15
+    };
   }
 
   // Générer emploi du temps par classe uniquement
@@ -53,7 +59,7 @@ class TimetableGenerator {
           const coursesNeeded = Math.ceil(assignment.hoursPerWeek || subject.duration || 1);
           
           for (let i = 0; i < coursesNeeded; i++) {
-            this.assignSubject(result, targetClass.name, subject, teacher);
+            this.assignSubject(result, targetClass.name, subject, teacher, classes);
           }
         }
       });
@@ -91,7 +97,7 @@ class TimetableGenerator {
             
             // Essayer d'assigner au moins 1 cours par jour
             for (let teacher of availableTeachers) {
-              if (this.assignSubjectOnDay(result, cls.name, subject, teacher, day)) {
+              if (this.assignSubjectOnDay(result, cls.name, subject, teacher, day, classes)) {
                 assignedCount++;
                 console.log(`Assigné ${subject.name} pour ${cls.name} le ${day} avec ${teacher.firstName} ${teacher.lastName}`);
                 break;
@@ -104,7 +110,7 @@ class TimetableGenerator {
             let assigned = false;
             for (let day of this.days) {
               for (let teacher of availableTeachers) {
-                if (this.assignSubjectOnDay(result, cls.name, subject, teacher, day)) {
+                if (this.assignSubjectOnDay(result, cls.name, subject, teacher, day, classes)) {
                   assignedCount++;
                   assigned = true;
                   break;
@@ -140,21 +146,102 @@ class TimetableGenerator {
     return grid;
   }
 
-  assignSubject(result, className, subject, teacher) {
-    const teacherName = `${teacher.firstName} ${teacher.lastName}`;
-    
-    // Trouver un créneau libre en respectant les disponibilités
+  // Compter les heures de cours par jour pour une classe
+  countHoursPerDay(result, className, day) {
+    let hours = 0;
+    for (let slot of this.timeSlots) {
+      const course = result.byClass[className][day][slot];
+      if (course) {
+        hours += 1; // Chaque créneau = 1 heure
+      }
+    }
+    return hours;
+  }
+
+  // Compter les heures de cours par semaine pour une classe
+  countHoursPerWeek(result, className) {
+    let totalHours = 0;
     for (let day of this.days) {
+      totalHours += this.countHoursPerDay(result, className, day);
+    }
+    return totalHours;
+  }
+
+  // Obtenir les limites d'heures pour une classe
+  getClassLimits(className, classes) {
+    const classData = classes.find(cls => cls.name === className);
+    return {
+      maxHoursPerDay: classData?.maxHoursPerDay || this.defaultLimits.maxHoursPerDay,
+      maxHoursPerWeek: classData?.maxHoursPerWeek || this.defaultLimits.maxHoursPerWeek
+    };
+  }
+
+  // Vérifier si on peut ajouter un cours en respectant les limites
+  canAddCourse(result, className, classes) {
+    const limits = this.getClassLimits(className, classes);
+    const currentWeeklyHours = this.countHoursPerWeek(result, className);
+    
+    // Vérifier la limite hebdomadaire
+    if (currentWeeklyHours >= limits.maxHoursPerWeek) {
+      console.log(`Limite hebdomadaire atteinte pour ${className}: ${currentWeeklyHours}/${limits.maxHoursPerWeek}h`);
+      return false;
+    }
+    
+    return true;
+  }
+
+  // Vérifier si on peut ajouter un cours un jour spécifique
+  canAddCourseOnDay(result, className, day, classes) {
+    const limits = this.getClassLimits(className, classes);
+    const currentDailyHours = this.countHoursPerDay(result, className, day);
+    const currentWeeklyHours = this.countHoursPerWeek(result, className);
+    
+    // Vérifier la limite quotidienne
+    if (currentDailyHours >= limits.maxHoursPerDay) {
+      console.log(`Limite quotidienne atteinte pour ${className} le ${day}: ${currentDailyHours}/${limits.maxHoursPerDay}h`);
+      return false;
+    }
+    
+    // Vérifier la limite hebdomadaire
+    if (currentWeeklyHours >= limits.maxHoursPerWeek) {
+      console.log(`Limite hebdomadaire atteinte pour ${className}: ${currentWeeklyHours}/${limits.maxHoursPerWeek}h`);
+      return false;
+    }
+    
+    return true;
+  }
+
+  assignSubject(result, className, subject, teacher, classes) {
+    const teacherName = `${teacher.firstName} ${teacher.lastName}`;
+    // Vérifier les limites globales avant de chercher un créneau
+    if (!this.canAddCourse(result, className, classes)) {
+      console.log(`Impossible d'assigner ${subject.name} à ${className}: limites hebdomadaires atteintes`);
+      return false;
+    }
+    for (let day of this.days) {
+      // Vérifier les limites pour ce jour
+      const limits = this.getClassLimits(className, classes);
+      const currentDailyHours = this.countHoursPerDay(result, className, day);
+      const currentWeeklyHours = this.countHoursPerWeek(result, className);
+      console.log(`[DEBUG] Tentative de placement de ${subject.name} pour ${className} le ${day} : ${currentDailyHours}h déjà placées (limite ${limits.maxHoursPerDay}), ${currentWeeklyHours}h semaine (limite ${limits.maxHoursPerWeek})`);
+      if (!this.canAddCourseOnDay(result, className, day, classes)) {
+        continue;
+      }
       for (let slot of this.timeSlots) {
         if (slot === '12:00-12:30') continue; // Pause déjeuner
-        
-        // Vérifier les disponibilités de l'enseignant
         if (!this.isTeacherAvailable(teacher, day, slot)) continue;
-        
-        // Vérifier que le créneau est libre pour la classe ET l'enseignant
-        if (!result.byClass[className][day][slot] && 
-            !result.byTeacher[teacherName][day][slot]) {
-          
+        if (!result.byClass[className][day][slot] && !result.byTeacher[teacherName][day][slot]) {
+          // Vérification FINALE juste avant placement
+          const afterDaily = this.countHoursPerDay(result, className, day) + 1;
+          const afterWeekly = this.countHoursPerWeek(result, className) + 1;
+          if (afterDaily > limits.maxHoursPerDay) {
+            console.log(`[REFUS] ${subject.name} pour ${className} le ${day} : dépasserait la limite quotidienne (${afterDaily}/${limits.maxHoursPerDay})`);
+            continue;
+          }
+          if (afterWeekly > limits.maxHoursPerWeek) {
+            console.log(`[REFUS] ${subject.name} pour ${className} semaine : dépasserait la limite hebdo (${afterWeekly}/${limits.maxHoursPerWeek})`);
+            continue;
+          }
           const courseInfo = {
             subject: subject.name,
             teacher: teacherName,
@@ -164,18 +251,15 @@ class TimetableGenerator {
             timeSlot: slot,
             room: this.assignRoom(subject, className)
           };
-          
-          // Assigner dans les deux grilles
           result.byClass[className][day][slot] = {
             ...courseInfo,
             type: 'class_view'
           };
-          
           result.byTeacher[teacherName][day][slot] = {
             ...courseInfo,
             type: 'teacher_view'
           };
-          
+          console.log(`[OK] Assigné ${subject.name} à ${className} le ${day} ${slot} (${this.countHoursPerDay(result, className, day)}h/jour, ${this.countHoursPerWeek(result, className)}h/semaine)`);
           return true;
         }
       }
@@ -183,32 +267,38 @@ class TimetableGenerator {
     return false;
   }
 
-  assignSubjectOnDay(result, className, subject, teacher, targetDay) {
+  assignSubjectOnDay(result, className, subject, teacher, targetDay, classes) {
     const teacherName = `${teacher.firstName} ${teacher.lastName}`;
-    
+    const limits = this.getClassLimits(className, classes);
+    const currentDailyHours = this.countHoursPerDay(result, className, targetDay);
+    const currentWeeklyHours = this.countHoursPerWeek(result, className);
+    console.log(`[DEBUG] Tentative de placement (OnDay) de ${subject.name} pour ${className} le ${targetDay} : ${currentDailyHours}h déjà placées (limite ${limits.maxHoursPerDay}), ${currentWeeklyHours}h semaine (limite ${limits.maxHoursPerWeek})`);
+    if (!this.canAddCourseOnDay(result, className, targetDay, classes)) {
+      return false;
+    }
     // Vérifier la limite par jour pour cette matière
     const maxPerDay = subject.maxPerDay || 2;
     const currentCountForDay = this.countSubjectInDay(result, className, subject.name, targetDay);
-    
     if (currentCountForDay >= maxPerDay) {
-      console.log(`Limite atteinte pour ${subject.name} le ${targetDay}: ${currentCountForDay}/${maxPerDay}`);
+      console.log(`[REFUS] Limite atteinte pour ${subject.name} le ${targetDay}: ${currentCountForDay}/${maxPerDay}`);
       return false;
     }
-    
-    // Mélanger les créneaux pour une meilleure répartition
     const shuffledSlots = [...this.timeSlots].sort(() => Math.random() - 0.5);
-    
-    // Chercher un créneau libre pour ce jour spécifique
     for (let slot of shuffledSlots) {
-      if (slot === '12:00-12:30') continue; // Pause déjeuner
-      
-      // Vérifier les disponibilités de l'enseignant
+      if (slot === '12:00-12:30') continue;
       if (!this.isTeacherAvailable(teacher, targetDay, slot)) continue;
-      
-      // Vérifier que le créneau est libre pour la classe ET l'enseignant
-      if (!result.byClass[className][targetDay][slot] && 
-          !result.byTeacher[teacherName][targetDay][slot]) {
-        
+      if (!result.byClass[className][targetDay][slot] && !result.byTeacher[teacherName][targetDay][slot]) {
+        // Vérification FINALE juste avant placement
+        const afterDaily = this.countHoursPerDay(result, className, targetDay) + 1;
+        const afterWeekly = this.countHoursPerWeek(result, className) + 1;
+        if (afterDaily > limits.maxHoursPerDay) {
+          console.log(`[REFUS] ${subject.name} pour ${className} le ${targetDay} : dépasserait la limite quotidienne (${afterDaily}/${limits.maxHoursPerDay})`);
+          continue;
+        }
+        if (afterWeekly > limits.maxHoursPerWeek) {
+          console.log(`[REFUS] ${subject.name} pour ${className} semaine : dépasserait la limite hebdo (${afterWeekly}/${limits.maxHoursPerWeek})`);
+          continue;
+        }
         const courseInfo = {
           subject: subject.name,
           teacher: teacherName,
@@ -218,18 +308,15 @@ class TimetableGenerator {
           timeSlot: slot,
           room: this.assignRoom(subject, className)
         };
-        
-        // Assigner dans les deux grilles
         result.byClass[className][targetDay][slot] = {
           ...courseInfo,
           type: 'class_view'
         };
-        
         result.byTeacher[teacherName][targetDay][slot] = {
           ...courseInfo,
           type: 'teacher_view'
         };
-        
+        console.log(`[OK] Assigné ${subject.name} à ${className} le ${targetDay} ${slot} (${this.countHoursPerDay(result, className, targetDay)}h/jour, ${this.countHoursPerWeek(result, className)}h/semaine)`);
         return true;
       }
     }
@@ -296,6 +383,105 @@ class TimetableGenerator {
     });
     
     return conflicts;
+  }
+
+  // Valider le respect des limites d'heures par classe
+  validateHoursLimits(timetableData, classes) {
+    const validation = {
+      isValid: true,
+      violations: [],
+      summary: {}
+    };
+
+    Object.keys(timetableData.byClass).forEach(className => {
+      const limits = this.getClassLimits(className, classes);
+      const weeklyHours = this.countHoursPerWeek(timetableData, className);
+      const dailyHours = {};
+      
+      // Compter les heures par jour
+      this.days.forEach(day => {
+        dailyHours[day] = this.countHoursPerDay(timetableData, className, day);
+      });
+
+      const classValidation = {
+        className,
+        limits,
+        actual: {
+          weeklyHours,
+          dailyHours
+        },
+        violations: []
+      };
+
+      // Vérifier la limite hebdomadaire
+      if (weeklyHours > limits.maxHoursPerWeek) {
+        classValidation.violations.push({
+          type: 'weekly_limit_exceeded',
+          limit: limits.maxHoursPerWeek,
+          actual: weeklyHours,
+          excess: weeklyHours - limits.maxHoursPerWeek
+        });
+        validation.isValid = false;
+      }
+
+      // Vérifier les limites quotidiennes
+      this.days.forEach(day => {
+        if (dailyHours[day] > limits.maxHoursPerDay) {
+          classValidation.violations.push({
+            type: 'daily_limit_exceeded',
+            day,
+            limit: limits.maxHoursPerDay,
+            actual: dailyHours[day],
+            excess: dailyHours[day] - limits.maxHoursPerDay
+          });
+          validation.isValid = false;
+        }
+      });
+
+      validation.summary[className] = classValidation;
+      validation.violations.push(...classValidation.violations);
+    });
+
+    return validation;
+  }
+
+  // Générer un rapport détaillé des heures par classe
+  generateHoursReport(timetableData, classes) {
+    const report = {
+      generatedAt: new Date().toISOString(),
+      classes: {}
+    };
+
+    Object.keys(timetableData.byClass).forEach(className => {
+      const limits = this.getClassLimits(className, classes);
+      const weeklyHours = this.countHoursPerWeek(timetableData, className);
+      const dailyHours = {};
+      
+      this.days.forEach(day => {
+        dailyHours[day] = this.countHoursPerDay(timetableData, className, day);
+      });
+
+      report.classes[className] = {
+        limits,
+        actual: {
+          weeklyHours,
+          dailyHours
+        },
+        compliance: {
+          weekly: weeklyHours <= limits.maxHoursPerWeek,
+          daily: this.days.every(day => dailyHours[day] <= limits.maxHoursPerDay)
+        },
+        utilization: {
+          weekly: Math.round((weeklyHours / limits.maxHoursPerWeek) * 100),
+          daily: this.days.map(day => ({
+            day,
+            utilization: Math.round((dailyHours[day] / limits.maxHoursPerDay) * 100)
+          }))
+        }
+      };
+    });
+
+    return report;
   }
 
   assignRoom(subject, className) {

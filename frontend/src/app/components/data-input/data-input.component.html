@@ -1,0 +1,179 @@
+<div class="data-input-container">
+  <h2>Saisie des Données</h2>
+
+  <!-- Section Classes -->
+  <div class="section">
+    <h3>Classes</h3>
+    
+    <!-- Formulaire d'ajout de classe -->
+    <div class="form-group">
+      <input [(ngModel)]="newClassName" placeholder="Nom de la classe" class="form-control">
+      <input [(ngModel)]="newClassLevel" placeholder="Niveau" class="form-control">
+      <input [(ngModel)]="newClassStudentCount" type="number" placeholder="Nombre d'élèves" class="form-control">
+      <button (click)="addClass()" class="btn btn-primary">Ajouter Classe</button>
+    </div>
+
+    <!-- Liste des classes avec limites d'heures -->
+    <div class="classes-list">
+      <div *ngFor="let class of classes; let i = index" class="class-item">
+        <div class="class-header">
+          <h4>{{ class.name }} ({{ class.level }})</h4>
+          <span class="student-count">{{ class.studentCount }} élèves</span>
+        </div>
+        
+        <!-- Limites d'heures -->
+        <div class="hours-limits">
+          <h5>Limites d'heures de cours</h5>
+          <div class="limits-form">
+            <div class="limit-group">
+              <label>Heures max/jour:</label>
+              <input 
+                type="number" 
+                [value]="class.maxHoursPerDay || defaultLimits.maxHoursPerDay"
+                (change)="updateClassLimits(i, 'maxHoursPerDay', $event.target.value)"
+                min="1" 
+                max="8" 
+                class="form-control limit-input"
+              >
+            </div>
+            <div class="limit-group">
+              <label>Heures max/semaine:</label>
+              <input 
+                type="number" 
+                [value]="class.maxHoursPerWeek || defaultLimits.maxHoursPerWeek"
+                (change)="updateClassLimits(i, 'maxHoursPerWeek', $event.target.value)"
+                min="1" 
+                max="40" 
+                class="form-control limit-input"
+              >
+            </div>
+            <button 
+              (click)="resetClassLimits(i)" 
+              class="btn btn-secondary btn-sm"
+              title="Réinitialiser aux valeurs par défaut"
+            >
+              🔄 Défaut
+            </button>
+          </div>
+        </div>
+
+        <!-- Matières assignées -->
+        <div class="subjects-assigned">
+          <h5>Matières assignées</h5>
+          <div class="subjects-list">
+            <span *ngFor="let subject of class.subjects" class="subject-tag">
+              {{ subject.name }}
+            </span>
+            <span *ngIf="!class.subjects || class.subjects.length === 0" class="no-subjects">
+              Aucune matière assignée
+            </span>
+          </div>
+        </div>
+
+        <button (click)="removeClass(i)" class="btn btn-danger btn-sm">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Enseignants -->
+  <div class="section">
+    <h3>Enseignants</h3>
+    
+    <div class="form-group">
+      <input [(ngModel)]="newTeacherFirstName" placeholder="Prénom" class="form-control">
+      <input [(ngModel)]="newTeacherLastName" placeholder="Nom" class="form-control">
+      <input [(ngModel)]="newTeacherEmail" type="email" placeholder="Email" class="form-control">
+      <button (click)="addTeacher()" class="btn btn-primary">Ajouter Enseignant</button>
+    </div>
+
+    <div class="teachers-list">
+      <div *ngFor="let teacher of teachers; let i = index" class="teacher-item">
+        <h4>{{ teacher.firstName }} {{ teacher.lastName }}</h4>
+        <p>{{ teacher.email }}</p>
+        <div class="subjects-assigned">
+          <span *ngFor="let subject of teacher.subjects" class="subject-tag">
+            {{ subject.name }}
+          </span>
+        </div>
+        <button (click)="removeTeacher(i)" class="btn btn-danger btn-sm">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Matières -->
+  <div class="section">
+    <h3>Matières</h3>
+    
+    <div class="form-group">
+      <input [(ngModel)]="newSubjectName" placeholder="Nom de la matière" class="form-control">
+      <input [(ngModel)]="newSubjectCode" placeholder="Code" class="form-control">
+      <input [(ngModel)]="newSubjectDuration" type="number" placeholder="Durée (heures/semaine)" class="form-control">
+      <button (click)="addSubject()" class="btn btn-primary">Ajouter Matière</button>
+    </div>
+
+    <div class="subjects-list">
+      <div *ngFor="let subject of subjects; let i = index" class="subject-item">
+        <h4>{{ subject.name }} ({{ subject.code }})</h4>
+        <p>{{ subject.duration }}h/semaine</p>
+        <button (click)="removeSubject(i)" class="btn btn-danger btn-sm">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Affectations -->
+  <div class="section">
+    <h3>Affectations Enseignant-Matière-Classe</h3>
+    
+    <div class="form-group">
+      <select [(ngModel)]="newAssignmentTeacherId" class="form-control">
+        <option value="">Sélectionner un enseignant</option>
+        <option *ngFor="let teacher of teachers" [value]="teacher.id">
+          {{ teacher.firstName }} {{ teacher.lastName }}
+        </option>
+      </select>
+      
+      <select [(ngModel)]="newAssignmentSubjectId" class="form-control">
+        <option value="">Sélectionner une matière</option>
+        <option *ngFor="let subject of subjects" [value]="subject.id">
+          {{ subject.name }}
+        </option>
+      </select>
+      
+      <select [(ngModel)]="newAssignmentClassId" class="form-control">
+        <option value="">Sélectionner une classe</option>
+        <option *ngFor="let class of classes" [value]="class.id">
+          {{ class.name }}
+        </option>
+      </select>
+      
+      <input [(ngModel)]="newAssignmentHoursPerWeek" type="number" placeholder="Heures/semaine" class="form-control">
+      <button (click)="addAssignment()" class="btn btn-primary">Ajouter Affectation</button>
+    </div>
+
+    <div class="assignments-list">
+      <div *ngFor="let assignment of assignments; let i = index" class="assignment-item">
+        <h4>{{ getTeacherName(assignment.teacherId) }} → {{ getSubjectName(assignment.subjectId) }} → {{ getClassName(assignment.classId) }}</h4>
+        <p>{{ assignment.hoursPerWeek }}h/semaine</p>
+        <button (click)="removeAssignment(i)" class="btn btn-danger btn-sm">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Boutons d'action -->
+  <div class="actions">
+    <button (click)="generateTimetable()" class="btn btn-success btn-lg">
+      🎯 Générer l'Emploi du Temps
+    </button>
+    <button (click)="saveData()" class="btn btn-info">💾 Sauvegarder</button>
+    <button (click)="loadData()" class="btn btn-warning">📂 Charger</button>
+  </div>
+
+  <!-- Résumé -->
+  <div class="summary">
+    <h3>Résumé</h3>
+    <p>Classes: {{ classes.length }}</p>
+    <p>Enseignants: {{ teachers.length }}</p>
+    <p>Matières: {{ subjects.length }}</p>
+    <p>Affectations: {{ assignments.length }}</p>
+  </div>
+</div> 

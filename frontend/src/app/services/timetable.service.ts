@@ -76,10 +76,18 @@ export class TimetableService {
         // Parcourir les jours jusqu'à placer toutes les heures
         for (let dayIndex = 0; dayIndex < days.length && totalPlaced < hoursPerWeek; dayIndex++) {
           const day = days[dayIndex];
-          let placedToday = 0;
+          
+          // Compter les cours DÉJÀ placés ce jour pour cette matière/classe
+          let alreadyPlacedToday = 0;
+          timeSlots.forEach(slot => {
+            const existingCourse = result.data.byClass[classe.name][day][slot];
+            if (existingCourse && existingCourse.subject === subject.name) {
+              alreadyPlacedToday++;
+            }
+          });
           
           // Placer les cours pour ce jour (max maxPerDay)
-          for (let slotIndex = 0; slotIndex < timeSlots.length && placedToday < maxPerDay && totalPlaced < hoursPerWeek; slotIndex++) {
+          for (let slotIndex = 0; slotIndex < timeSlots.length && alreadyPlacedToday < maxPerDay && totalPlaced < hoursPerWeek; slotIndex++) {
             const slot = timeSlots[slotIndex];
             
             // Vérifier si le créneau est libre pour la classe ET l'enseignant
@@ -102,7 +110,7 @@ export class TimetableService {
               };
               
               totalPlaced++;
-              placedToday++;
+              alreadyPlacedToday++;
             }
           }
         }
