@@ -12,7 +12,96 @@ export class TimetableService {
   constructor(private api: ApiService) {}
 
   generate(data: any): Observable<any> {
-    return this.api.post(`${this.endpoint}/generate`, data);
+    // Version fallback sans backend
+    console.log('Génération locale sans backend');
+    return new Observable(observer => {
+      setTimeout(() => {
+        const result = this.generateLocally(data);
+        observer.next(result);
+        observer.complete();
+      }, 1000);
+    });
+  }
+
+  private generateLocally(data: any): any {
+    const result = {
+      success: true,
+      data: {
+        byClass: {},
+        byTeacher: {}
+      },
+      summary: {
+        classesCount: data.classes?.length || 0,
+        teachersCount: data.teachers?.length || 0,
+        subjectsProcessed: data.subjects?.length || 0,
+        conflictsDetected: 0
+      },
+      conflicts: {
+        count: 0,
+        detected: []
+      }
+    };
+
+    // Génération simple locale
+    const timeSlots = ['08:00-09:00', '09:00-10:00', '10:00-11:00', '11:00-12:00', '13:30-14:30', '14:30-15:30', '15:30-16:30'];
+    const days = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
+
+    // Initialiser les grilles
+    data.classes?.forEach((classe: any) => {
+      result.data.byClass[classe.name] = {};
+      days.forEach(day => {
+        result.data.byClass[classe.name][day] = {};
+      });
+    });
+
+    data.teachers?.forEach((teacher: any) => {
+      const teacherName = `${teacher.firstName} ${teacher.lastName}`;
+      result.data.byTeacher[teacherName] = {};
+      days.forEach(day => {
+        result.data.byTeacher[teacherName][day] = {};
+      });
+    });
+
+    // Placer les cours selon les affectations
+    let slotIndex = 0;
+    data.assignments?.forEach((assignment: any) => {
+      const teacher = data.teachers?.find((t: any) => t.id === assignment.teacherId);
+      const subject = data.subjects?.find((s: any) => s.id === assignment.subjectId);
+      const classe = data.classes?.find((c: any) => c.id === assignment.classId);
+
+      if (teacher && subject && classe) {
+        const teacherName = `${teacher.firstName} ${teacher.lastName}`;
+        const hoursNeeded = assignment.hoursPerWeek || 1;
+
+        for (let i = 0; i < hoursNeeded; i++) {
+          const dayIndex = Math.floor(slotIndex / timeSlots.length) % days.length;
+          const timeIndex = slotIndex % timeSlots.length;
+          const day = days[dayIndex];
+          const timeSlot = timeSlots[timeIndex];
+
+          const courseInfo = {
+            subject: subject.name,
+            teacher: teacherName,
+            class: classe.name,
+            room: `Salle ${slotIndex % 3 + 1}`
+          };
+
+          result.data.byClass[classe.name][day][timeSlot] = {
+            ...courseInfo,
+            type: 'class_view'
+          };
+
+          result.data.byTeacher[teacherName][day][timeSlot] = {
+            ...courseInfo,
+            type: 'teacher_view'
+          };
+
+          slotIndex++;
+        }
+      }
+    });
+
+    return result;
   }
 
   generateByClass(data: any): Observable<any> {
