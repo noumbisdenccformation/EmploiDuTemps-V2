@@ -29,14 +29,14 @@ import { TranslationService } from '../../services/translation.service';
               
               <!-- Disponibilités -->
               <div class="availability-section">
-                <h4>📅 Disponibilités</h4>
+                <h4>📅 {{translate('assignments.availability')}}</h4>
                 
                 <!-- Option toute la semaine -->
                 <div class="week-availability">
                   <label>
                     <input type="checkbox" [checked]="isTeacherAvailableAllWeek(teacher.id)" 
                            (change)="toggleTeacherAllWeek(teacher.id, $any($event.target).checked)">
-                    <strong>Toute la semaine</strong>
+                    <strong>{{translate('assignments.all_week')}}</strong>
                   </label>
                 </div>
                 
@@ -78,7 +78,7 @@ import { TranslationService } from '../../services/translation.service';
             <input [(ngModel)]="newSubject.name" placeholder="Nom de la matière">
             <input [(ngModel)]="newSubject.duration" type="number" placeholder="Durée (h)" step="1" min="1">
             <input [(ngModel)]="newSubject.maxPerDay" type="number" placeholder="Max par jour" step="1" min="1" max="8">
-            <button (click)="addSubject()">Ajouter Matière</button>
+            <button (click)="addSubject()">{{translate('assignments.add_subject')}}</button>
           </div>
           <div class="items-list">
             <div class="item-card" *ngFor="let subject of subjects">
@@ -97,7 +97,7 @@ import { TranslationService } from '../../services/translation.service';
         <mat-card-content>
           <div class="add-form">
             <input [(ngModel)]="newClass.name" placeholder="Nom de la classe">
-            <button (click)="addClass()">Ajouter Classe</button>
+            <button (click)="addClass()">{{translate('assignments.add_class')}}</button>
           </div>
           <div class="items-list">
             <div class="item-card" *ngFor="let class of classes">
@@ -134,7 +134,7 @@ import { TranslationService } from '../../services/translation.service';
               </option>
             </select>
             <input [(ngModel)]="newAssignment.hoursPerWeek" type="number" placeholder="Heures/semaine" step="1" min="1">
-            <button (click)="addAssignment()">Créer Affectation</button>
+            <button (click)="addAssignment()">{{translate('assignments.create_assignment')}}</button>
           </div>
           <div class="items-list">
             <div class="assignment-card" *ngFor="let assignment of assignments">
