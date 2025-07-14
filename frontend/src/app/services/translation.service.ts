@@ -79,7 +79,8 @@ export class TranslationService {
       // Footer
       'footer.copyright': '© 2024 NCCformation - Tous droits réservés',
       'common.refresh': 'Actualiser les Données',
-      'timetable.create_assignments_first': 'Veuillez d\'abord créer des affectations dans la page "Affectations"'
+      'timetable.create_assignments_first': 'Veuillez d\'abord créer des affectations dans la page "Affectations"',
+      'timetable.generate': 'Générer Emploi du Temps'
     },
     en: {
       // Header
@@ -151,7 +152,8 @@ export class TranslationService {
       // Footer
       'footer.copyright': '© 2024 NCCformation - All rights reserved',
       'common.refresh': 'Refresh Data',
-      'timetable.create_assignments_first': 'Please first create assignments in the "Assignments" page'
+      'timetable.create_assignments_first': 'Please first create assignments in the "Assignments" page',
+      'timetable.generate': 'Generate Timetable'
     }
   };
 

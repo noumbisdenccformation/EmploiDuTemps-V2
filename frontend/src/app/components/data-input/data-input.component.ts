@@ -43,24 +43,24 @@ export interface Assignment {
   template: `
     <mat-card class="input-card">
       <mat-card-header>
-        <mat-card-title>Génération d'Emploi du Temps</mat-card-title>
-        <mat-card-subtitle>Utilisez la page "Affectations" pour configurer enseignants, matières et classes</mat-card-subtitle>
+        <mat-card-title>{{translate('timetable.title')}}</mat-card-title>
+        <mat-card-subtitle>{{translate('timetable.subtitle')}}</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
         <div class="info-section">
-          <h3>📊 Résumé des données</h3>
+          <h3>📊 {{translate('timetable.summary')}}</h3>
           <div class="summary">
             <div class="summary-item">
-              <strong>{{teacherCount}}</strong> Enseignants
+              <strong>{{teacherCount}}</strong> {{translate('timetable.teachers')}}
             </div>
             <div class="summary-item">
-              <strong>{{subjectCount}}</strong> Matières
+              <strong>{{subjectCount}}</strong> {{translate('timetable.subjects')}}
             </div>
             <div class="summary-item">
-              <strong>{{classCount}}</strong> Classes
+              <strong>{{classCount}}</strong> {{translate('timetable.classes')}}
             </div>
             <div class="summary-item">
-              <strong>{{assignmentCount}}</strong> Affectations
+              <strong>{{assignmentCount}}</strong> {{translate('timetable.assignments')}}
             </div>
           </div>
         </div>
@@ -68,25 +68,25 @@ export interface Assignment {
         <div class="actions">
           <button mat-raised-button color="primary" (click)="generateData()" [disabled]="assignmentCount === 0">
             <mat-icon>schedule</mat-icon>
-            Générer Emploi du Temps
+            {{translate('timetable.generate')}}
           </button>
           <button mat-raised-button color="accent" (click)="refreshData()">
             <mat-icon>sync</mat-icon>
-            Actualiser les Données
+            {{translate('common.refresh')}}
           </button>
         </div>
         
         <div class="help-text" *ngIf="assignmentCount === 0">
           <mat-icon>info</mat-icon>
-          <span>Veuillez d'abord créer des affectations dans la page "Affectations"</span>
+          <span>{{translate('timetable.create_assignments_first')}}</span>
         </div>
         
         <div class="debug-info" style="margin-top: 20px; padding: 10px; background: #f0f0f0; border-radius: 4px;">
-          <h4>Informations de débogage :</h4>
-          <p>Nombre d'affectations : {{assignmentCount}}</p>
-          <p>Nombre d'enseignants : {{teacherCount}}</p>
-          <p>Nombre de matières : {{subjectCount}}</p>
-          <p>Nombre de classes : {{classCount}}</p>
+          <h4>{{translate('timetable.debug_info')}}</h4>
+          <p>{{translate('timetable.assignments_count')}} {{assignmentCount}}</p>
+          <p>{{translate('timetable.teachers_count')}} {{teacherCount}}</p>
+          <p>{{translate('timetable.subjects_count')}} {{subjectCount}}</p>
+          <p>{{translate('timetable.classes_count')}} {{classCount}}</p>
         </div>
       </mat-card-content>
     </mat-card>
