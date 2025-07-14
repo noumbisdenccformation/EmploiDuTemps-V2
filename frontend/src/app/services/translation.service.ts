@@ -61,6 +61,7 @@ export class TranslationService {
       'assignments.to': 'à',
       'assignments.time_slots': 'Créneaux horaires',
       'assignments.add_time_slot': 'Ajouter créneau',
+      'assignments.week': 'semaine',
       
       // Days
       'day.monday': 'Lundi',
@@ -132,6 +133,7 @@ export class TranslationService {
       'assignments.to': 'to',
       'assignments.time_slots': 'Time slots',
       'assignments.add_time_slot': 'Add slot',
+      'assignments.week': 'week',
       
       // Days
       'day.monday': 'Monday',
