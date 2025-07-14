@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { PdfService } from '../../services/pdf.service';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-schedule-view',
@@ -31,19 +32,19 @@ import { PdfService } from '../../services/pdf.service';
           <div class="summary-stats">
             <div class="stat">
               <mat-icon>school</mat-icon>
-              <span>{{result.summary?.classesCount || 0}} Classes</span>
+              <span>{{result.summary?.classesCount || 0}} {{translate('timetable.classes')}}</span>
             </div>
             <div class="stat">
               <mat-icon>people</mat-icon>
-              <span>{{result.summary?.teachersCount || 0}} Enseignants</span>
+              <span>{{result.summary?.teachersCount || 0}} {{translate('timetable.teachers')}}</span>
             </div>
             <div class="stat">
               <mat-icon>book</mat-icon>
-              <span>{{result.summary?.subjectsProcessed || 0}} Matières</span>
+              <span>{{result.summary?.subjectsProcessed || 0}} {{translate('timetable.subjects')}}</span>
             </div>
             <div class="stat success">
               <mat-icon>check_circle</mat-icon>
-              <span>0 Conflits</span>
+              <span>0 {{translate('timetable.conflicts')}}</span>
             </div>
           </div>
         </mat-card-content>
@@ -53,16 +54,16 @@ import { PdfService } from '../../services/pdf.service';
       <mat-tab-group class="schedule-tabs">
         
         <!-- Par Classe -->
-        <mat-tab label="📚 Par Classe" *ngIf="result.data?.byClass">
+        <mat-tab [label]="'📚 ' + translate('timetable.by_class')" *ngIf="result.data?.byClass">
           <div class="tab-content">
             <div *ngFor="let class of getClasses()" class="schedule-section">
               <div class="section-header">
                 <h3>{{class}}</h3>
-                <button (click)="generateClassPDF(class)" class="pdf-btn">📄 PDF</button>
+                <button (click)="generateClassPDF(class)" class="pdf-btn">📄 {{translate('common.pdf')}}</button>
               </div>
               <div class="schedule-grid">
-                <div class="time-header">Heure</div>
-                <div *ngFor="let day of days" class="day-header">{{day}}</div>
+                <div class="time-header">{{translate('common.hour')}}</div>
+                <div *ngFor="let day of days" class="day-header">{{getDayTranslation(day)}}</div>
                 
                 <ng-container *ngFor="let time of timeSlots">
                   <div class="time-cell">{{time}}</div>
@@ -80,16 +81,16 @@ import { PdfService } from '../../services/pdf.service';
         </mat-tab>
         
         <!-- Par Enseignant -->
-        <mat-tab label="👨‍🏫 Par Enseignant" *ngIf="result.data?.byTeacher">
+        <mat-tab [label]="'👨‍🏫 ' + translate('timetable.by_teacher')" *ngIf="result.data?.byTeacher">
           <div class="tab-content">
             <div *ngFor="let teacher of getTeachers()" class="schedule-section">
               <div class="section-header">
                 <h3>{{teacher}}</h3>
-                <button (click)="generateTeacherPDF(teacher)" class="pdf-btn">📄 PDF</button>
+                <button (click)="generateTeacherPDF(teacher)" class="pdf-btn">📄 {{translate('common.pdf')}}</button>
               </div>
               <div class="schedule-grid">
-                <div class="time-header">Heure</div>
-                <div *ngFor="let day of days" class="day-header">{{day}}</div>
+                <div class="time-header">{{translate('common.hour')}}</div>
+                <div *ngFor="let day of days" class="day-header">{{getDayTranslation(day)}}</div>
                 
                 <ng-container *ngFor="let time of timeSlots">
                   <div class="time-cell">{{time}}</div>
@@ -181,7 +182,6 @@ import { PdfService } from '../../services/pdf.service';
     .pdf-btn:hover {
       background: #45a049;
     }
-
   `]
 })
 export class ScheduleViewComponent {
@@ -193,7 +193,25 @@ export class ScheduleViewComponent {
     '12:30-13:30', '13:30-14:30', '14:30-15:30', '15:30-16:30'
   ];
 
-  constructor(private pdfService: PdfService) {}
+  constructor(
+    private pdfService: PdfService,
+    private translationService: TranslationService
+  ) {}
+
+  translate(key: string): string {
+    return this.translationService.translate(key);
+  }
+
+  getDayTranslation(day: string): string {
+    const dayMap: {[key: string]: string} = {
+      'Lundi': 'day.monday',
+      'Mardi': 'day.tuesday', 
+      'Mercredi': 'day.wednesday',
+      'Jeudi': 'day.thursday',
+      'Vendredi': 'day.friday'
+    };
+    return this.translate(dayMap[day] || day);
+  }
 
   getClasses(): string[] {
     return this.result?.data?.byClass ? Object.keys(this.result.data.byClass) : [];
@@ -272,6 +290,4 @@ export class ScheduleViewComponent {
     }
     return schedule;
   }
-
-
 }

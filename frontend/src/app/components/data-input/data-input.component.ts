@@ -135,8 +135,13 @@ export class DataInputComponent implements OnInit {
 
   constructor(
     private assignmentService: AssignmentService,
-    private dataService: DataService
+    private dataService: DataService,
+    private translationService: TranslationService
   ) {}
+
+  translate(key: string): string {
+    return this.translationService.translate(key);
+  }
 
   ngOnInit() {
     this.refreshData();

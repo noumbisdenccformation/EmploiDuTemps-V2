@@ -33,6 +33,7 @@ export class TranslationService {
       'timetable.teachers_count': 'Nombre d\'enseignants :',
       'timetable.subjects_count': 'Nombre de matières :',
       'timetable.classes_count': 'Nombre de classes :',
+      'timetable.generating': 'Génération en cours',
       
       // Assignments page
       'assignments.title': 'Gestion Complète des Affectations',
@@ -73,7 +74,9 @@ export class TranslationService {
       'common.add_slot': 'Ajouter créneau',
       
       // Footer
-      'footer.copyright': '© 2024 NCCformation - Tous droits réservés'
+      'footer.copyright': '© 2024 NCCformation - Tous droits réservés',
+      'common.refresh': 'Actualiser les Données',
+      'timetable.create_assignments_first': 'Veuillez d\'abord créer des affectations dans la page "Affectations"'
     },
     en: {
       // Header
@@ -99,6 +102,7 @@ export class TranslationService {
       'timetable.teachers_count': 'Number of teachers:',
       'timetable.subjects_count': 'Number of subjects:',
       'timetable.classes_count': 'Number of classes:',
+      'timetable.generating': 'Generating',
       
       // Assignments page
       'assignments.title': 'Complete Assignment Management',
@@ -139,7 +143,9 @@ export class TranslationService {
       'common.add_slot': 'Add slot',
       
       // Footer
-      'footer.copyright': '© 2024 NCCformation - All rights reserved'
+      'footer.copyright': '© 2024 NCCformation - All rights reserved',
+      'common.refresh': 'Refresh Data',
+      'timetable.create_assignments_first': 'Please first create assignments in the "Assignments" page'
     }
   };
 

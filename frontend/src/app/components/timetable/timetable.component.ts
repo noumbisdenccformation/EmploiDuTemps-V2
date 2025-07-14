@@ -1,17 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { TimetableService } from '../../services/timetable.service';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-timetable',
   template: `
     <div class="timetable-container">
-      <h1>Génération d'Emploi du Temps</h1>
+      <h1>{{translate('timetable.title')}}</h1>
       
       <app-data-input (dataGenerated)="onDataGenerated($event)"></app-data-input>
       
       <div *ngIf="loading" class="loading">
         <mat-spinner></mat-spinner>
-        <p>Génération en cours...</p>
+        <p>{{translate('timetable.generating')}}...</p>
       </div>
 
       <app-schedule-view [result]="result"></app-schedule-view>
@@ -30,7 +31,14 @@ export class TimetableComponent implements OnInit {
   
 
 
-  constructor(private timetableService: TimetableService) {}
+  constructor(
+    private timetableService: TimetableService,
+    private translationService: TranslationService
+  ) {}
+
+  translate(key: string): string {
+    return this.translationService.translate(key);
+  }
 
   ngOnInit() {
     // Essayer de générer automatiquement avec des données par défaut
