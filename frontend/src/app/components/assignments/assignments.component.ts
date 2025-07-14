@@ -71,7 +71,7 @@ import { TranslationService } from '../../services/translation.service';
       <!-- Gestion des Matières -->
       <mat-card class="section-card">
         <mat-card-header>
-          <mat-card-title>📚 Matières</mat-card-title>
+          <mat-card-title>📚 {{translate('assignments.subjects_section')}}</mat-card-title>
         </mat-card-header>
         <mat-card-content>
           <div class="add-form">
@@ -92,7 +92,7 @@ import { TranslationService } from '../../services/translation.service';
       <!-- Gestion des Classes -->
       <mat-card class="section-card">
         <mat-card-header>
-          <mat-card-title>🏫 Classes</mat-card-title>
+          <mat-card-title>🏫 {{translate('assignments.classes_section')}}</mat-card-title>
         </mat-card-header>
         <mat-card-content>
           <div class="add-form">
@@ -111,24 +111,24 @@ import { TranslationService } from '../../services/translation.service';
       <!-- Affectations -->
       <mat-card class="section-card">
         <mat-card-header>
-          <mat-card-title>📅 Affectations</mat-card-title>
+          <mat-card-title>📅 {{translate('assignments.assignments_section')}}</mat-card-title>
         </mat-card-header>
         <mat-card-content>
           <div class="add-form">
             <select [(ngModel)]="newAssignment.teacherId">
-              <option value="">Sélectionner un enseignant</option>
+              <option value="">{{translate('assignments.select_teacher')}}</option>
               <option *ngFor="let teacher of teachers" [value]="teacher.id">
                 {{teacher.firstName}} {{teacher.lastName}}
               </option>
             </select>
             <select [(ngModel)]="newAssignment.subjectId">
-              <option value="">Sélectionner une matière</option>
+              <option value="">{{translate('assignments.select_subject')}}</option>
               <option *ngFor="let subject of subjects" [value]="subject.id">
                 {{subject.name}}
               </option>
             </select>
             <select [(ngModel)]="newAssignment.classId">
-              <option value="">Sélectionner une classe</option>
+              <option value="">{{translate('assignments.select_class')}}</option>
               <option *ngFor="let class of classes" [value]="class.id">
                 {{class.name}}
               </option>
