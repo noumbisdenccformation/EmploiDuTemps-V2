@@ -2,6 +2,7 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { AssignmentService } from '../../services/assignment.service';
 import { DataService } from '../../services/data.service';
+import { TranslationService } from '../../services/translation.service';
 
 // Interfaces
 export interface Subject {
