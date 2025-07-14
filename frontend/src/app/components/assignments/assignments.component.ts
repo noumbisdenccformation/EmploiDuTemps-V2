@@ -44,7 +44,7 @@ import { TranslationService } from '../../services/translation.service';
                   <label>
                     <input type="checkbox" [checked]="isTeacherAvailable(teacher.id, day)" 
                            (change)="toggleTeacherDay(teacher.id, day, $any($event.target).checked)">
-                    {{day}}
+                    {{getDayTranslation(day)}}
                   </label>
                   <div *ngIf="isTeacherAvailable(teacher.id, day)" class="time-slots">
                     <div *ngFor="let slot of getTeacherTimeSlots(teacher.id, day); let i = index" class="time-slot">
@@ -276,6 +276,17 @@ export class AssignmentsComponent implements OnInit {
   classes: any[] = [];
   
   days = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
+
+  getDayTranslation(day: string): string {
+    const dayMap: {[key: string]: string} = {
+      'Lundi': 'day.monday',
+      'Mardi': 'day.tuesday', 
+      'Mercredi': 'day.wednesday',
+      'Jeudi': 'day.thursday',
+      'Vendredi': 'day.friday'
+    };
+    return this.translate(dayMap[day] || day);
+  }
   teacherAvailability: any = {};
   
   newTeacher = { firstName: '', lastName: '' };
