@@ -4,12 +4,12 @@
     <mat-nav-list>
       <a mat-list-item *ngFor="let item of menuItems" [routerLink]="item.route">
         <mat-icon>{{item.icon}}</mat-icon>
-        <span>{{item.name}}</span>
+        <span>{{translate(item.translationKey)}}</span>
       </a>
       <mat-divider></mat-divider>
       <button mat-list-item (click)="generateAllPDF()" class="pdf-all-btn">
         <mat-icon>picture_as_pdf</mat-icon>
-        <span>Exporter tous les PDF</span>
+        <span>{{translate('menu.export_all')}}</span>
       </button>
     </mat-nav-list>
   </mat-sidenav>
@@ -19,8 +19,15 @@
       <button type="button" mat-icon-button (click)="drawer.toggle()">
         <mat-icon>menu</mat-icon>
       </button>
-      <span>{{title}}</span>
+      <span>{{translate('app.title')}}</span>
       <div class="header-right">
+        <div class="language-selector">
+          <mat-select [(value)]="currentLang" (selectionChange)="changeLanguage($event.value)" class="lang-select">
+            <mat-option *ngFor="let lang of availableLanguages" [value]="lang.code">
+              {{lang.flag}} {{lang.name}}
+            </mat-option>
+          </mat-select>
+        </div>
         <img src="assets/logo-ncc.png" alt="NCC Formation" class="logo">
       </div>
     </mat-toolbar>
@@ -33,7 +40,7 @@
     <footer class="footer">
       <div class="footer-content">
         <div class="copyright">
-          <span>© 2024 NCCformation - Tous droits réservés</span>
+          <span>{{translate('footer.copyright')}}</span>
         </div>
         <div class="footer-logo">
           <img src="assets/logo-ncc.png" alt="NCC Formation" class="footer-logo-img">

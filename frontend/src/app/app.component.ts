@@ -1,25 +1,44 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { PdfService } from './services/pdf.service';
 import { TimetableService } from './services/timetable.service';
+import { TranslationService } from './services/translation.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'Emploi du Temps Scolaire';
+  currentLang = 'fr';
+  availableLanguages: any[] = [];
   
   menuItems = [
-    { name: 'Emploi du temps', route: '/timetable', icon: 'schedule' },
-    { name: 'Affectations', route: '/assignments', icon: 'assignment' }
+    { name: 'Emploi du temps', route: '/timetable', icon: 'schedule', translationKey: 'menu.timetable' },
+    { name: 'Affectations', route: '/assignments', icon: 'assignment', translationKey: 'menu.assignments' }
     // { name: 'Salles', route: '/rooms', icon: 'meeting_room' }, // Prochaine version
   ];
 
   constructor(
     private pdfService: PdfService,
-    private timetableService: TimetableService
+    private timetableService: TimetableService,
+    private translationService: TranslationService
   ) {}
+
+  ngOnInit() {
+    this.availableLanguages = this.translationService.getAvailableLanguages();
+    this.translationService.currentLang$.subscribe(lang => {
+      this.currentLang = lang;
+    });
+  }
+
+  translate(key: string): string {
+    return this.translationService.translate(key);
+  }
+
+  changeLanguage(lang: string): void {
+    this.translationService.setLanguage(lang);
+  }
 
   generateAllPDF() {
     // Cette méthode sera appelée par le bouton global PDF
