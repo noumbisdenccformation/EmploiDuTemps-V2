@@ -31,6 +31,7 @@ import { ScheduleViewComponent } from './components/schedule-view/schedule-view.
 import { AuthComponent } from './components/auth/auth.component';
 import { RoomsComponent } from './components/rooms/rooms.component';
 import { AssignmentsComponent } from './components/assignments/assignments.component';
+import { TranslationService } from './services/translation.service';
 
 @NgModule({
   declarations: [
@@ -67,7 +68,7 @@ import { AssignmentsComponent } from './components/assignments/assignments.compo
     MatExpansionModule,
     MatCheckboxModule
   ],
-  providers: [],
+  providers: [TranslationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
