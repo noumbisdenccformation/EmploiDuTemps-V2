@@ -1,23 +1,24 @@
 import { Component, OnInit } from '@angular/core';
 import { AssignmentService } from '../../services/assignment.service';
 import { DataService } from '../../services/data.service';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-assignments',
   template: `
     <div class="assignments-container">
-      <h2>Gestion Complète des Affectations</h2>
+      <h2>{{translate('assignments.title')}}</h2>
       
       <!-- Gestion des Enseignants -->
       <mat-card class="section-card">
         <mat-card-header>
-          <mat-card-title>👨‍🏫 Enseignants</mat-card-title>
+          <mat-card-title>👨‍🏫 {{translate('assignments.teachers_section')}}</mat-card-title>
         </mat-card-header>
         <mat-card-content>
           <div class="add-form">
-            <input [(ngModel)]="newTeacher.firstName" placeholder="Prénom">
-            <input [(ngModel)]="newTeacher.lastName" placeholder="Nom">
-            <button (click)="addTeacher()">Ajouter Enseignant</button>
+            <input [(ngModel)]="newTeacher.firstName" [placeholder]="translate('assignments.first_name')">
+            <input [(ngModel)]="newTeacher.lastName" [placeholder]="translate('assignments.last_name')">
+            <button (click)="addTeacher()">{{translate('assignments.add_teacher')}}</button>
           </div>
           <div class="items-list">
             <div class="teacher-card" *ngFor="let teacher of teachers">
@@ -284,8 +285,13 @@ export class AssignmentsComponent implements OnInit {
 
   constructor(
     private assignmentService: AssignmentService,
-    private dataService: DataService
+    private dataService: DataService,
+    private translationService: TranslationService
   ) {}
+
+  translate(key: string): string {
+    return this.translationService.translate(key);
+  }
 
   ngOnInit() {
     this.assignmentService.assignments$.subscribe(assignments => {

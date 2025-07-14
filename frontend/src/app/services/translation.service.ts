@@ -59,6 +59,8 @@ export class TranslationService {
       'assignments.hours_per_week': 'Heures/semaine',
       'assignments.teaches': 'enseigne',
       'assignments.to': 'à',
+      'assignments.time_slots': 'Créneaux horaires',
+      'assignments.add_time_slot': 'Ajouter créneau',
       
       // Days
       'day.monday': 'Lundi',
@@ -128,6 +130,8 @@ export class TranslationService {
       'assignments.hours_per_week': 'Hours/week',
       'assignments.teaches': 'teaches',
       'assignments.to': 'to',
+      'assignments.time_slots': 'Time slots',
+      'assignments.add_time_slot': 'Add slot',
       
       // Days
       'day.monday': 'Monday',
